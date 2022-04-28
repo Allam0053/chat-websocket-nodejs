@@ -1,6 +1,6 @@
 # RushUh.in 🤺
 
-<p style="text-align: center">
+<p align="center">
     <img src="logo.png" alt="RushUh.in" width="20%">
 </p>
 
