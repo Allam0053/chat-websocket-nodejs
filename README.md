@@ -1,4 +1,4 @@
-# RushUh.in
+# RushUh.in 🤺
 
 <p style="text-align: center">
     <img src="logo.png" alt="RushUh.in" width="20%">
