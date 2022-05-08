@@ -1,0 +1,32 @@
+{
+  "name": "rushuh.in",
+  "version": "1.0.0",
+  "description": "<p align=\"center\">     <img src=\"logo.png\" alt=\"RushUh.in\" width=\"20%\"> </p>",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "tw-dev": "npx tailwindcss -i ./css/base.css -o ./dist/output.css --watch",
+    "tw": "npx tailwindcss -i ./css/base.css -o ./dist/output.css",
+    "dev": "nodemon ./index.js",
+    "start": "node ./index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iwandepe/rushuh.in.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/iwandepe/rushuh.in/issues"
+  },
+  "homepage": "https://github.com/iwandepe/rushuh.in#readme",
+  "dependencies": {
+    "express": "^4.18.1",
+    "websocket": "^1.0.34"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.16",
+    "tailwindcss": "^3.0.24"
+  }
+}
