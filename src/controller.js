@@ -4,8 +4,22 @@ import Konva from "konva";
 /**
  * Global Variables
  */
+class Player {
+  constructor(id, name, num){
+    this.id = id;
+    this.name = name;
+    this.num = num;
+    this.x = randomX();
+    this.y = randomY();
+    this.obj = initPlayer(this.id, this.num);
+
+  }
+
+}
+const myID = 'ID1';
 let players = [];
-const charSize = 80;
+const charSize = 70;
+const velocity = 10;
 
 /**
  * Stage : Ukuran canvas dan propertinya
@@ -37,11 +51,12 @@ Konva.Image.fromURL('/assets/tembok.png', function (tembok) {
  */
 var gameLayer = new Konva.Layer();
 
-function initPlayer(name, num) {
+function initPlayer(id, num) {
+  let char = null;
   var charObj = new Image();
   charObj.src = '/assets/char'+num+'.png';
-  charObj.onload = function () {
-    var char = new Konva.Image({
+  charObj.onload =  function () {
+    char = new Konva.Image({
       x: randomX(),
       y: randomY(),
       image: charObj,
@@ -49,14 +64,16 @@ function initPlayer(name, num) {
       height: charSize,
     });
 
+    players[id].obj = char;
+
     baseLayer.add(char);
+
   };
+
 }
 
-initPlayer('Player 1', 1);
-initPlayer('Player 2', 2);
-initPlayer('Player 3', 3);
-initPlayer('Player 4', 4);
+players[myID] = new Player(myID, "Sisuka", 1)
+// players.push(new Player("Sasuke", 2))
 
 /**
  * Stage Adder : Tambahkan layer ke stage
@@ -77,3 +94,47 @@ function randomY() {
 function randomX() {
   return Math.random() * (stage.width()-charSize*2) + charSize;
 }
+
+/**
+ * Loop and update the player position
+ */
+var anim = new Konva.Animation(function () {
+  updatePlayers(myID)
+}, baseLayer);
+anim.start();
+
+function updatePlayers(id) {
+  let player = players[id];
+  if(player.obj != null) {
+    player.obj.x(player.x);
+    player.obj.y(player.y);
+  }
+}
+
+/**
+ * Event Listener : Keyboard
+ */
+window.addEventListener('keydown', function(ev) {
+  console.log(ev.key)
+  if(ev.key == ' ' && ev.target == document.body) {
+    ev.preventDefault();
+  }
+
+  switch (ev.key) {
+    case 'w':
+      players[myID].y-=velocity;
+      break;
+    case 'a':
+      players[myID].x-=velocity;
+      break;
+    case 's':
+      players[myID].y+=velocity;
+      break;
+    case 'd':
+      players[myID].x+=velocity;
+      break;
+  
+    default:
+      break;
+  }
+});
