@@ -126,23 +126,22 @@ $(document.body).keydown(function (ev) {
     keydowns['a'] = true;
   if(ev.key == 'd')
     keydowns['d'] = true;
-  if(ev.key == 'ArrowRight')
-    keydowns['ArrowRight'] = true;
-  if(ev.key == 'ArrowLeft')
-    keydowns['ArrowLeft'] = true;
 
-  if(keydowns['w'])
-    players[myID].y-=velocity;
-  if(keydowns['s'])
-    players[myID].y+=velocity;
+  let s = Math.sin(players[myID].rotation * Math.PI / 180)
+  let c = Math.cos(players[myID].rotation * Math.PI / 180)
+
+  if(keydowns['w']){
+    players[myID].x = players[myID].x + velocity * s ;
+    players[myID].y = players[myID].y - velocity * c ;
+  }
+  if(keydowns['s']){
+    players[myID].x = players[myID].x - velocity * s ;
+    players[myID].y = players[myID].y + velocity * c ;
+  }
   if(keydowns['a'])
-    players[myID].x-=velocity;
-  if(keydowns['d'])
-    players[myID].x+=velocity;
-  if(keydowns['ArrowRight'])
-    players[myID].rotation+=velocity;
-  if(keydowns['ArrowLeft'])
     players[myID].rotation-=velocity;
+  if(keydowns['d'])
+    players[myID].rotation+=velocity;
 
 });
 
