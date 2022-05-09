@@ -12,13 +12,15 @@ class Player {
     this.num = num;
     this.x = randomX();
     this.y = randomY();
+    this.rotation = randomRotation();
     this.obj = initPlayer(this.id, this.num);
   }
 }
 const myID = 'ID1';
 let players = [];
 const charSize = 70;
-const velocity = 10;
+const velocity = 5;
+let keydowns = [];
 
 /**
  * Stage : Ukuran canvas dan propertinya
@@ -50,8 +52,11 @@ function initPlayer(id, num) {
   charObj.src = '/assets/char'+num+'.png';
   charObj.onload =  function () {
     char = new Konva.Image({
-      x: randomX(),
-      y: randomY(),
+      x: players[id].x,
+      y: players[id].y,
+      offsetX: charSize/2,
+      offsetY: charSize/2,
+      rotation: players[id].rotation,
       image: charObj,
       width: charSize,
       height: charSize,
@@ -83,6 +88,10 @@ function randomX() {
   return Math.random() * (stage.width()-charSize*2) + charSize;
 }
 
+function randomRotation() {
+  return Math.random() * (360);
+}
+
 /**
  * Animator : Loop and update the canvas
  */
@@ -96,35 +105,57 @@ function updatePlayers(id) {
   if(player.obj != null) {
     player.obj.x(player.x);
     player.obj.y(player.y);
+    player.obj.rotation(player.rotation);
   }
 }
 
 /**
  * Event Listener : Keyboard
  */
-window.addEventListener('keydown', function(ev) {
-  console.log(ev.key)
-  if(ev.key == ' ' && ev.target == document.body) {
+$(document.body).keydown(function (ev) {
+  // console.log(ev.key)
+  if((ev.key == ' ' || ev.key == 'ArrowRight' || ev.key == 'ArrowLeft' ) && ev.target == document.body) {
     ev.preventDefault();
   }
 
-  switch (ev.key) {
-    case 'w':
-      players[myID].y-=velocity;
-      break;
-    case 'a':
-      players[myID].x-=velocity;
-      break;
-    case 's':
-      players[myID].y+=velocity;
-      break;
-    case 'd':
-      players[myID].x+=velocity;
-      break;
-  
-    default:
-      break;
-  }
+  if(ev.key == 'w')
+    keydowns['w'] = true;
+  if(ev.key == 's')
+    keydowns['s'] = true;
+  if(ev.key == 'a')
+    keydowns['a'] = true;
+  if(ev.key == 'd')
+    keydowns['d'] = true;
+  if(ev.key == 'ArrowRight')
+    keydowns['ArrowRight'] = true;
+  if(ev.key == 'ArrowLeft')
+    keydowns['ArrowLeft'] = true;
+
+  if(keydowns['w'])
+    players[myID].y-=velocity;
+  if(keydowns['s'])
+    players[myID].y+=velocity;
+  if(keydowns['a'])
+    players[myID].x-=velocity;
+  if(keydowns['d'])
+    players[myID].x+=velocity;
+  if(keydowns['ArrowRight'])
+    players[myID].rotation+=velocity;
+  if(keydowns['ArrowLeft'])
+    players[myID].rotation-=velocity;
+
+});
+
+$(document.body).keyup(function (ev) {
+  keydowns[ev.key] = false;  
+});
+
+/**
+ * Event Listener : Click
+ */
+stage.on('click', function () {
+  var pos = stage.getRelativePointerPosition();
+  console.log(pos)
 });
 
 /**

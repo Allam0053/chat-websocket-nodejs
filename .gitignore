@@ -1,3 +1,9 @@
+# Vite
+css/output.css
+dist
+node_modules
+yarn.lock
+
 # Logs
 logs
 *.log
@@ -128,9 +134,3 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
-
-# Vite
-css/output.css
-dist
-node_modules
-yarn.lock
