@@ -3,7 +3,7 @@ const app = require("express")();
 const PORT_CLIENT = 8080
 const PORT_SERVER = 8081
 
-app.get("/", (req,res)=> res.sendFile(__dirname + "/index.html"));
+// app.get("/", (req,res)=> res.sendFile(__dirname + "/index.html"));
 app.listen(PORT_CLIENT, () => console.log("Client listening on port " + PORT_CLIENT));
 
 const express = require("express");

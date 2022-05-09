@@ -3,90 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link href="/dist/output.css">
+    <title>RushUh.In</title>
+
+    <!-- Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+
+    <!-- TailwindCSS -->
+    <link href="/css/output.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+
 </head>
 <body>
-    <h1>RushUh.in</h1>
-    <button id = 'btnCreate'>New Room</button>
-    <button id = 'btnJoin'>Join Room</button>
-    <input type = 'text' id = 'txtRoomId'>
-    <div id  = 'divPlayers'></div>
-    <div id  = 'divBoard'></div>
-
-    <script>
-        // HTML elements
-        let clientId = null;
-        let roomId = null;
-        let playerColor = null;
-
-        const PORT_SERVER = 8081;
-
-        let ws = new WebSocket("ws://localhost:" + PORT_SERVER);
-        const btnCreate = document.getElementById("btnCreate");
-        const btnJoin = document.getElementById("btnJoin");
-        const txtRoomId = document.getElementById("txtRoomId");
-        const divPlayers = document.getElementById("divPlayers");
-        const divBoard = document.getElementById("divBoard");
     
-        // wiring events
-        btnJoin.addEventListener("click", e => {
+    <div class="layout bg-gray-800 text-gray-100 flex flex-col min-w-full min-h-screen">
+        <div class="title text-3xl text-center font-semibold mt-8 mb-4">
+            <h1 class="">RushUh.In</h1>
+        </div>
+        <div class="content flex p-6 min-h-screen">
+            <div id="controllbox" class="box flex-1 flex flex-col gap-2">
+                <div class="box-title">
+                    <h2>Controll Box</h2>
+                </div>
+                <button id = 'btnCreate' class="btn">Create Room</button>
+                <div class="or my-4 text-center">
+                    <h3>----- OR -----</h3>
+                </div>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="txtRoomId" type="text" placeholder="ID Room">
+                <div id  = 'divPlayers'></div>
+                <button id = 'btnJoin' class="btn">Join Room</button>
+            </div>
 
-            if (roomId === null)
-                roomId = txtRoomId.value;
+            <div id="canvaslayout" class="box bg-gray-500 flex-auto w-1/2"></div>
             
-            const payLoad = {
-                "method": "join",
-                "clientId": clientId,
-                "roomId": roomId
-            }
+            <div id="msgbox" class="box flex-1 ">
+                <div class="box-title">
+                    <h2>Message Box</h2>
+                </div>
+            </div>
 
-            console.log(payLoad);
+        </div>
+    </div>
 
-            ws.send(JSON.stringify(payLoad));
-
-        })
-
-        btnCreate.addEventListener("click", e => {
-
-            const payLoad = {
-                "method": "create",
-                "clientId": clientId
-            }
-
-            ws.send(JSON.stringify(payLoad));
-
-        })
-
-        ws.onmessage = message => {
-            // message.data
-            const response = JSON.parse(message.data);
-
-            // connect
-            if (response.method === "connect"){
-                clientId = response.clientId;
-                console.log("Client id set successfully " + clientId)
-            }
-
-            // create
-            if (response.method === "create"){
-                roomId = response.room.id;
-                console.log("Room successfully created with id " + response.room.id)  
-            }
-
-
-            // update
-            if (response.method === "update"){
-                
-                // not implemented
-
-            }
-
-            // join
-            if (response.method === "join"){
-                console.log(response)
-            }
-        }
-    </script>
+    
+    <script type="module" src="/src/client.js"></script>
+    <script type="module" src="/src/controller.js"></script>
 </body>
 </html>

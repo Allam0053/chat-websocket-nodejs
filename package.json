@@ -5,10 +5,12 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "tw-dev": "npx tailwindcss -i ./css/base.css -o ./dist/output.css --watch",
-    "tw": "npx tailwindcss -i ./css/base.css -o ./dist/output.css",
-    "dev": "nodemon ./index.js",
-    "start": "node ./index.js"
+    "tw-dev": "npx tailwindcss -i ./css/input.css -o ./css/output.css --watch",
+    "tw": "npx tailwindcss -i ./css/input.css -o ./css/output.css",
+    "server": "nodemon ./server/server.js",
+    "client": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "repository": {
     "type": "git",
@@ -23,6 +25,9 @@
   "homepage": "https://github.com/iwandepe/rushuh.in#readme",
   "dependencies": {
     "express": "^4.18.1",
+    "jquery": "^3.6.0",
+    "konva": "^8.3.8",
+    "vite": "^2.9.8",
     "websocket": "^1.0.34"
   },
   "devDependencies": {
