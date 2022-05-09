@@ -1,5 +1,6 @@
 import $ from "jquery";
 import Konva from "konva";
+import { showIncomingChat, showSendingChat } from "./chat";
 
 /**
  * Global Variables
@@ -12,9 +13,7 @@ class Player {
     this.x = randomX();
     this.y = randomY();
     this.obj = initPlayer(this.id, this.num);
-
   }
-
 }
 const myID = 'ID1';
 let players = [];
@@ -45,12 +44,6 @@ Konva.Image.fromURL('/assets/tembok.png', function (tembok) {
   baseLayer.add(tembok);
 });
 
-
-/**
- * Game Layer : Player, Enemy, Bullet
- */
-var gameLayer = new Konva.Layer();
-
 function initPlayer(id, num) {
   let char = null;
   var charObj = new Image();
@@ -69,24 +62,19 @@ function initPlayer(id, num) {
     baseLayer.add(char);
 
   };
-
 }
 
 players[myID] = new Player(myID, "Sisuka", 1)
-// players.push(new Player("Sasuke", 2))
 
 /**
  * Stage Adder : Tambahkan layer ke stage
  */
-
 stage.add(baseLayer);
-// stage.add(gameLayer)
 
 
 /**
  * Helper : Anything
  */
-
 function randomY() {
   return Math.random() * (stage.height()-charSize*2) + charSize;
 }
@@ -96,7 +84,7 @@ function randomX() {
 }
 
 /**
- * Loop and update the player position
+ * Animator : Loop and update the canvas
  */
 var anim = new Konva.Animation(function () {
   updatePlayers(myID)
@@ -138,3 +126,18 @@ window.addEventListener('keydown', function(ev) {
       break;
   }
 });
+
+/**
+ * Chat : Send and receive message
+ */
+$('#btnSend').click(function () {
+  sendMsg();
+});
+
+function sendMsg() {
+  let msg = $('#chat-input').val();
+  $('#chat-input').val('');
+  showSendingChat(msg);
+
+  // TODO: Send message to server
+}

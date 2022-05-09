@@ -15,3 +15,11 @@ Rushuh.In is a Javascipt based 2D Game with Socket Programming. Build for final 
 | 2  | Allam Taju Sarof     | 05111940000053 |
 | 3  | Achmad Akbar Irwanda | 05111940000138 |
 | 4  | Iwan Dwi Prakoso     | 05111940000229 |
+
+## How To Run
+0. Perpare your environement for yarn project
+1. Run dependency instalation with `yarn`
+2. Open 3 different terminal
+3. Run tailwind css builder with `yarn tw-dev`
+4. Run server with `yarn server`
+5. Run client with `yarn client`

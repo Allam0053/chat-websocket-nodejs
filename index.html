@@ -21,7 +21,7 @@
 </head>
 <body>
     
-    <div class="layout bg-gray-800 text-gray-100 flex flex-col min-w-full min-h-screen">
+    <div class="layout bg-gray-800 text-gray-100 flex flex-col  min-h-screen max-h-screen">
         <div class="title text-3xl text-center font-semibold mt-8 mb-4">
             <h1 class="">RushUh.In</h1>
         </div>
@@ -34,7 +34,7 @@
                 <div class="or my-4 text-center">
                     <h3>----- OR -----</h3>
                 </div>
-                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="txtRoomId" type="text" placeholder="ID Room">
+                <input class="text-input" id="txtRoomId" type="text" placeholder="ID Room">
                 <div id  = 'divPlayers'></div>
                 <button id = 'btnJoin' class="btn">Join Room</button>
             </div>
@@ -45,7 +45,7 @@
                 <div class="box-title">
                     <h2>Message Box</h2>
                 </div>
-                <div class="chats flex flex-col gap-2">
+                <div id="chats" class="chats flex flex-col gap-2 overflow-y-auto h-[600px] scrollbar pr-2">
                     <div class="chatL">
                         <span class="block text-green-900 font-extrabold mb-1">PlayerCupu</span>
                         <div class="text flex max-w-max">
@@ -92,6 +92,16 @@
                             <span class="block mt-auto mb-0 mr-0 ml-4 text-xs text-gray-500 w-fit">01.46</span>
                         </div>
                     </div>
+                    <div class="chatR">
+                        <div class="text flex max-w-max">
+                            <span class="block">ppppp</span>
+                            <span class="block mt-auto mb-0 mr-0 ml-4 text-xs text-gray-500 w-fit">01.46</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="sender mt-4 flex gap-2">
+                    <input class="text-input" id="chat-input" type="text" placeholder="Message">
+                    <button id="btnSend" class="btn">Send</button>
                 </div>
             </div>
 
