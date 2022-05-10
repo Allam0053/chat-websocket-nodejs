@@ -20,7 +20,10 @@ const myID = 'ID1';
 let players = [];
 const charSize = 70;
 const velocity = 5;
+const angularvelocity = 100;
 let keydowns = [];
+let atkGun = null;
+let atkSword = null;
 
 /**
  * Stage : Ukuran canvas dan propertinya
@@ -95,8 +98,17 @@ function randomRotation() {
 /**
  * Animator : Loop and update the canvas
  */
-var anim = new Konva.Animation(function () {
+var anim = new Konva.Animation(function (frame) {
   updatePlayers(myID)
+
+  var angleDiff = (frame.timeDiff * angularvelocity) / 100;
+
+  if(atkSword){
+    players[myID].rotation += angleDiff;
+  }
+  if(atkGun){
+
+  }
 }, baseLayer);
 anim.start();
 
@@ -167,6 +179,12 @@ $(document.body).keyup(function (ev) {
 stage.on('click', function () {
   var pos = stage.getRelativePointerPosition();
   console.log(pos)
+
+  // Muter selama 1 detik 
+  atkSword = true;
+  setTimeout(() => {
+    atkSword = false
+  }, 1000);
 });
 
 /**

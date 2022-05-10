@@ -23,3 +23,7 @@ Rushuh.In is a Javascipt based 2D Game with Socket Programming. Build for final 
 3. Run tailwind css builder with `yarn tw-dev`
 4. Run server with `yarn server`
 5. Run client with `yarn client`
+
+## How To Play
+1. Press WASD to move
+2. Left click to attack with rotation
