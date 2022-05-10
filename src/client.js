@@ -37,6 +37,8 @@ btnJoin.addEventListener("click", e => {
     console.log(payLoad);
 
     ws.send(JSON.stringify(payLoad));
+    updateCanvasState();
+
 
 })
 
@@ -47,6 +49,7 @@ function createRoom() {
     }
 
     ws.send(JSON.stringify(payLoad));  
+    updateCanvasState();
 }
 btnCreate.addEventListener("click", createRoom);
 
@@ -105,7 +108,6 @@ ws.onmessage = message => {
         roomId = response.room.id;
         $('#room-id').text(roomId);
         $('#btnSend').prop('disabled', false);
-        updateCanvasState();
     }
 
     // update
@@ -120,7 +122,6 @@ ws.onmessage = message => {
         roomId = response.room.id;
         $('#room-id').text(roomId);
         $('#btnSend').prop('disabled', false);
-        updateCanvasState();
     }
 
     // chat
