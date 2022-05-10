@@ -2,8 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+.title{
+    font-family: 'Berkshire Swash', cursive;
+}
+
 .box{
-    @apply p-5;
+    @apply px-5 py-8 max-h-[700px];
 }
 
 .box-title{
