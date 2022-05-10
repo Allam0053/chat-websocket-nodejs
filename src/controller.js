@@ -214,6 +214,12 @@ stage.on('click', function () {
 $('#btnSend').click(function () {
   sendMsg();
 });
+$('#chat-input').on('keypress', (e)=>{
+  if(e.key == 'Enter'){
+    e.preventDefault();
+    sendMsg();
+  }
+})
 
 function sendMsg() {
   let msg = $('#chat-input').val();

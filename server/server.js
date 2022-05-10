@@ -32,7 +32,8 @@ wsServer.on("request", request => {
             const roomId = guidRoom();
             rooms[roomId] = {
                 "id": roomId,
-                "clients": []
+                "clients": [{"clientId":clientId}],
+                "messages": []
             }
 
             const payLoad = {
@@ -69,8 +70,34 @@ wsServer.on("request", request => {
             })
         }
 
+        // chat
         if (result.method === "message") {
-            console.log(result)
+            // console.log(result)
+            const clientId = result.clientId;
+            const roomId = result.roomId;
+            const room = rooms[roomId];
+            
+            // rooms[roomId].messages.push(
+            //     {
+            //         "sender": clientId,
+            //         "message": result.message
+            //     }
+            // )
+
+            // Sent back the messages to all client in the same room
+            const payLoad = {
+                "method": "message",
+                "messages": {
+                    "sender": clientId,
+                    "message": result.message
+                }
+            }
+
+            room.clients.forEach(c => {
+                console.log(c.clientId)
+                clients[c.clientId].connection.send(JSON.stringify(payLoad))
+            })
+
         }
     })
 

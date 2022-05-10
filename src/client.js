@@ -1,13 +1,17 @@
 import $ from "jquery";
+import { showIncomingChat } from "./chat";
 
 /**
  * File for configuring connection between client and server
  */
 
+// USERNAME != CLIENTID
 let clientId = null;
 let username = null;
 let roomId = null;
 let playerColor = null;
+
+let messages = [];
 
 const PORT_SERVER = 8081;
 
@@ -50,6 +54,7 @@ function messageToServer(msg) {
     const payLoad = {
         "method": "message",
         "clientId": clientId,
+        "roomId": roomId,
         "message": msg
     }
 
@@ -94,8 +99,8 @@ ws.onmessage = message => {
     if (response.method === "create"){
         roomId = response.room.id;
         $('#room-id').text(roomId);
+        $('#btnSend').prop('disabled', false);
     }
-
 
     // update
     if (response.method === "update"){
@@ -108,6 +113,16 @@ ws.onmessage = message => {
     if (response.method === "join"){
         roomId = response.room.id;
         $('#room-id').text(roomId);
+        $('#btnSend').prop('disabled', false);
+    }
+
+    // chat
+    if (response.method === "message"){
+        messages = response.messages;
+        console.log(messages);
+        if(messages.sender != clientId){
+            showIncomingChat(messages.sender, messages.message);
+        }
     }
 }
 
