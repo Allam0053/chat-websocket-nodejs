@@ -92,7 +92,7 @@ function initPlayer(id, num) {
   };
 }
 
-players[myID] = new Player(myID, "Sisuka", 1)
+players[myID] = new Player(myID, "Sisuka", 2)
 players['ID2'] = new Player('ID2', "Sasuke", 2)
 
 /**
