@@ -1,10 +1,17 @@
+import $ from "jquery";
+import { showIncomingChat } from "./chat";
+
 /**
  * File for configuring connection between client and server
  */
 
+// USERNAME != CLIENTID
 let clientId = null;
+let username = null;
 let roomId = null;
 let playerColor = null;
+
+let messages = [];
 
 const PORT_SERVER = 8081;
 
@@ -30,28 +37,62 @@ btnJoin.addEventListener("click", e => {
     console.log(payLoad);
 
     ws.send(JSON.stringify(payLoad));
+    updateCanvasState(true);
+
 
 })
 
-btnCreate.addEventListener("click", e => {
-
+function createRoom() {
     const payLoad = {
         "method": "create",
         "clientId": clientId
     }
 
-    ws.send(JSON.stringify(payLoad));
-
-})
+    ws.send(JSON.stringify(payLoad));  
+    updateCanvasState(true);
+}
+btnCreate.addEventListener("click", createRoom);
 
 function messageToServer(msg) {
     const payLoad = {
         "method": "message",
         "clientId": clientId,
+        "roomId": roomId,
         "message": msg
     }
 
     ws.send(JSON.stringify(payLoad));
+}
+
+$('#room-id').on('click', function() {
+    navigator.clipboard.writeText(roomId);
+    // alert("Copied text: " + roomId);
+});
+$('#room-id').on('mouseover', function() {
+    if(roomId != 'Not Joined'){
+        if(roomId)
+            this.innerText = "Click To Copy RoomID";
+    }
+});
+$('#room-id').on('mouseout', function() {
+    if(roomId != 'Not Joined'){
+        if(roomId)
+            this.innerText = roomId;
+        else
+            this.innerText = 'Not Joined'
+    }
+});
+
+$('#username').on('change', function() {
+    username = this.value;
+});
+
+function updateCanvasState(shown) {
+    $('#canvascontainer').toggleClass('hidden');
+    $('#splash').toggleClass('hidden');
+    
+    $('#btnSend').prop('disabled', !shown);
+    $('#chat-input').prop('disabled', !shown);
 }
 
 ws.onmessage = message => {
@@ -61,15 +102,15 @@ ws.onmessage = message => {
     // connect
     if (response.method === "connect"){
         clientId = response.clientId;
-        console.log("Client id set successfully " + clientId)
+        $('#username').val(clientId);
+        username = clientId;
     }
 
     // create
     if (response.method === "create"){
         roomId = response.room.id;
-        console.log("Room successfully created with id " + response.room.id)  
+        $('#room-id').text(roomId);
     }
-
 
     // update
     if (response.method === "update"){
@@ -80,7 +121,17 @@ ws.onmessage = message => {
 
     // join
     if (response.method === "join"){
-        console.log(response)
+        roomId = response.room.id;
+        $('#room-id').text(roomId);
+    }
+
+    // chat
+    if (response.method === "message"){
+        messages = response.messages;
+        console.log(messages);
+        if(messages.sender != clientId){
+            showIncomingChat(messages.sender, messages.message);
+        }
     }
 }
 
