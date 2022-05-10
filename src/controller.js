@@ -55,16 +55,35 @@ function initPlayer(id, num) {
   var charObj = new Image();
   charObj.src = '/assets/char'+num+'.png';
   charObj.onload =  function () {
-    char = new Konva.Image({
+    char = new Konva.Group({
       x: players[id].x,
       y: players[id].y,
       offsetX: charSize/2,
       offsetY: charSize/2,
       rotation: players[id].rotation,
+      width: charSize,
+      height: charSize,
+    });
+
+    var imgChar = new Konva.Image({
+      x: 0,
+      y: 0,
       image: charObj,
       width: charSize,
       height: charSize,
     });
+
+    var txtChar = new Konva.Text({
+      x: charSize/2-15,
+      y: charSize,
+      text: players[id].name,
+      fontSize: 10,
+      fontFamily: 'Inter',
+      fill: 'white',
+    });
+
+    char.add(imgChar);
+    char.add(txtChar);
 
     players[id].obj = char;
 
@@ -74,6 +93,7 @@ function initPlayer(id, num) {
 }
 
 players[myID] = new Player(myID, "Sisuka", 1)
+players['ID2'] = new Player('ID2', "Sasuke", 2)
 
 /**
  * Stage Adder : Tambahkan layer ke stage
