@@ -65,6 +65,10 @@ wsServer.on("request", request => {
                 clients[c.clientId].connection.send(JSON.stringify(payLoad))
             })
         }
+
+        if (result.method === "message") {
+            console.log(result)
+        }
     })
 
     // generate a new clientId

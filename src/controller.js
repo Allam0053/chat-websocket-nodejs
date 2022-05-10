@@ -1,6 +1,7 @@
 import $ from "jquery";
 import Konva from "konva";
 import { showIncomingChat, showSendingChat } from "./chat";
+import { messageToServer } from "./client";
 
 /**
  * Global Variables
@@ -199,5 +200,5 @@ function sendMsg() {
   $('#chat-input').val('');
   showSendingChat(msg);
 
-  // TODO: Send message to server
+  messageToServer(msg);
 }
