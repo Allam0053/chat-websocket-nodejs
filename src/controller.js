@@ -103,11 +103,12 @@ anim.start();
 
 function updatePlayers(id) {
   let player = players[id];
-  if(player.obj != null) {
-    player.obj.x(player.x);
-    player.obj.y(player.y);
-    player.obj.rotation(player.rotation);
-  }
+    if(player.obj != null) {
+      player.obj.x(player.x);
+      player.obj.y(player.y);
+      player.obj.rotation(player.rotation);
+    }
+
 }
 
 /**
@@ -128,21 +129,32 @@ $(document.body).keydown(function (ev) {
   if(ev.key == 'd')
     keydowns['d'] = true;
 
-  let s = Math.sin(players[myID].rotation * Math.PI / 180)
-  let c = Math.cos(players[myID].rotation * Math.PI / 180)
+  let player = players[myID];
+  
+  let s = Math.sin(player.rotation * Math.PI / 180)
+  let c = Math.cos(player.rotation * Math.PI / 180)
+  // console.log(player.x, player.y, stage.width(), stage.height())
 
-  if(keydowns['w']){
-    players[myID].x = players[myID].x + velocity * s ;
-    players[myID].y = players[myID].y - velocity * c ;
+  if(player.x < stage.width() && player.x > 0 && player.y > 0 && player.y < stage.height()) {
+
+    if(keydowns['w']){
+      player.x = player.x + velocity * s ;
+      player.y = player.y - velocity * c ;
+    }
+    if(keydowns['s']){
+      player.x = player.x - velocity * s ;
+      player.y = player.y + velocity * c ;
+    }
+    if(keydowns['a'])
+      player.rotation-=velocity;
+    if(keydowns['d'])
+      player.rotation+=velocity;
+
+  }else{
+    // Jika nabrak, respawn di tempat random
+    player.x = randomX();
+    player.y = randomY(); 
   }
-  if(keydowns['s']){
-    players[myID].x = players[myID].x - velocity * s ;
-    players[myID].y = players[myID].y + velocity * c ;
-  }
-  if(keydowns['a'])
-    players[myID].rotation-=velocity;
-  if(keydowns['d'])
-    players[myID].rotation+=velocity;
 
 });
 
