@@ -1,3 +1,5 @@
+import $ from "jquery";
+
 /**
  * File for configuring connection between client and server
  */
@@ -33,16 +35,15 @@ btnJoin.addEventListener("click", e => {
 
 })
 
-btnCreate.addEventListener("click", e => {
-
+function createRoom() {
     const payLoad = {
         "method": "create",
         "clientId": clientId
     }
 
-    ws.send(JSON.stringify(payLoad));
-
-})
+    ws.send(JSON.stringify(payLoad));  
+}
+btnCreate.addEventListener("click", createRoom);
 
 function messageToServer(msg) {
     const payLoad = {
@@ -53,6 +54,25 @@ function messageToServer(msg) {
 
     ws.send(JSON.stringify(payLoad));
 }
+
+$('#room-id').on('click', function() {
+    navigator.clipboard.writeText(roomId);
+    alert("Copied text: " + roomId);
+});
+$('#room-id').on('mouseover', function() {
+    if(roomId != 'Not Joined'){
+        if(roomId)
+            this.innerText = "Click To Copy RoomID";
+    }
+});
+$('#room-id').on('mouseout', function() {
+    if(roomId != 'Not Joined'){
+        if(roomId)
+            this.innerText = roomId;
+        else
+            this.innerText = 'Not Joined'
+    }
+});
 
 ws.onmessage = message => {
     // message.data
@@ -67,7 +87,7 @@ ws.onmessage = message => {
     // create
     if (response.method === "create"){
         roomId = response.room.id;
-        console.log("Room successfully created with id " + response.room.id)  
+        $('#room-id').text(roomId);
     }
 
 
@@ -80,7 +100,8 @@ ws.onmessage = message => {
 
     // join
     if (response.method === "join"){
-        console.log(response)
+        roomId = response.room.id;
+        $('#room-id').text(roomId);
     }
 }
 
