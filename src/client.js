@@ -5,6 +5,7 @@ import $ from "jquery";
  */
 
 let clientId = null;
+let username = null;
 let roomId = null;
 let playerColor = null;
 
@@ -57,7 +58,7 @@ function messageToServer(msg) {
 
 $('#room-id').on('click', function() {
     navigator.clipboard.writeText(roomId);
-    alert("Copied text: " + roomId);
+    // alert("Copied text: " + roomId);
 });
 $('#room-id').on('mouseover', function() {
     if(roomId != 'Not Joined'){
@@ -74,6 +75,10 @@ $('#room-id').on('mouseout', function() {
     }
 });
 
+$('#username').on('change', function() {
+    username = this.value;
+});
+
 ws.onmessage = message => {
     // message.data
     const response = JSON.parse(message.data);
@@ -81,7 +86,8 @@ ws.onmessage = message => {
     // connect
     if (response.method === "connect"){
         clientId = response.clientId;
-        console.log("Client id set successfully " + clientId)
+        $('#username').val(clientId);
+        username = clientId;
     }
 
     // create

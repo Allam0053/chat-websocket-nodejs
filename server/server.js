@@ -29,7 +29,7 @@ wsServer.on("request", request => {
         // a client want to create a new room
         if (result.method === "create") {
             const clientId = result.clientId;
-            const roomId = guid();
+            const roomId = guidRoom();
             rooms[roomId] = {
                 "id": roomId,
                 "clients": []
@@ -39,6 +39,8 @@ wsServer.on("request", request => {
                 "method": "create",
                 "room" : rooms[roomId]
             }
+
+            console.log(clientId + ' has created #' + roomId);
 
             const con = clients[clientId].connection;
             con.send(JSON.stringify(payLoad));
@@ -59,6 +61,7 @@ wsServer.on("request", request => {
                 "method": "join",
                 "room": room
             }
+            console.log(clientId + ' has joined #' + roomId);
 
             // loop through all clients and tell them that people has joined
             room.clients.forEach(c => {
@@ -72,7 +75,7 @@ wsServer.on("request", request => {
     })
 
     // generate a new clientId
-    const clientId = guid();
+    const clientId = guidUser();
     clients[clientId] = {
         "connection":  connection
     }
@@ -110,4 +113,6 @@ function S4() {
 }
  
 // then to call it, plus stitch in '4' in the third group
-const guid = () => (S4() + S4() + "-" + S4() + "-4" + S4().substr(0,3) + "-" + S4() + "-" + S4() + S4() + S4()).toLowerCase();
+const guidRoom = () => ('R' + S4()).toUpperCase();
+const guidUser = () => 'User' +( S4() ).toLowerCase();
+// const guid = () => (S4() + S4() + "-" + S4() + "-4" + S4().substr(0,3) + "-" + S4() + "-" + S4() + S4() + S4()).toLowerCase();
