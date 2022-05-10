@@ -94,7 +94,6 @@ wsServer.on("request", request => {
             }
 
             room.clients.forEach(c => {
-                console.log(c.clientId)
                 clients[c.clientId].connection.send(JSON.stringify(payLoad))
             })
 

@@ -37,7 +37,7 @@ btnJoin.addEventListener("click", e => {
     console.log(payLoad);
 
     ws.send(JSON.stringify(payLoad));
-    updateCanvasState();
+    updateCanvasState(true);
 
 
 })
@@ -49,7 +49,7 @@ function createRoom() {
     }
 
     ws.send(JSON.stringify(payLoad));  
-    updateCanvasState();
+    updateCanvasState(true);
 }
 btnCreate.addEventListener("click", createRoom);
 
@@ -87,9 +87,12 @@ $('#username').on('change', function() {
     username = this.value;
 });
 
-function updateCanvasState() {
+function updateCanvasState(shown) {
     $('#canvascontainer').toggleClass('hidden');
     $('#splash').toggleClass('hidden');
+    
+    $('#btnSend').prop('disabled', !shown);
+    $('#chat-input').prop('disabled', !shown);
 }
 
 ws.onmessage = message => {
@@ -107,7 +110,6 @@ ws.onmessage = message => {
     if (response.method === "create"){
         roomId = response.room.id;
         $('#room-id').text(roomId);
-        $('#btnSend').prop('disabled', false);
     }
 
     // update
@@ -121,7 +123,6 @@ ws.onmessage = message => {
     if (response.method === "join"){
         roomId = response.room.id;
         $('#room-id').text(roomId);
-        $('#btnSend').prop('disabled', false);
     }
 
     // chat
