@@ -44,6 +44,16 @@ btnCreate.addEventListener("click", e => {
 
 })
 
+function messageToServer(msg) {
+    const payLoad = {
+        "method": "message",
+        "clientId": clientId,
+        "message": msg
+    }
+
+    ws.send(JSON.stringify(payLoad));
+}
+
 ws.onmessage = message => {
     // message.data
     const response = JSON.parse(message.data);
@@ -73,3 +83,5 @@ ws.onmessage = message => {
         console.log(response)
     }
 }
+
+export { messageToServer };
