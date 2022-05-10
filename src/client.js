@@ -84,6 +84,11 @@ $('#username').on('change', function() {
     username = this.value;
 });
 
+function updateCanvasState() {
+    $('#canvascontainer').toggleClass('hidden');
+    $('#splash').toggleClass('hidden');
+}
+
 ws.onmessage = message => {
     // message.data
     const response = JSON.parse(message.data);
@@ -100,6 +105,7 @@ ws.onmessage = message => {
         roomId = response.room.id;
         $('#room-id').text(roomId);
         $('#btnSend').prop('disabled', false);
+        updateCanvasState();
     }
 
     // update
@@ -114,6 +120,7 @@ ws.onmessage = message => {
         roomId = response.room.id;
         $('#room-id').text(roomId);
         $('#btnSend').prop('disabled', false);
+        updateCanvasState();
     }
 
     // chat
