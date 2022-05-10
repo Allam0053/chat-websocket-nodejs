@@ -22,6 +22,7 @@ let players = [];
 const charSize = 70;
 const velocity = 5;
 let keydowns = [];
+let typing = false;
 
 /**
  * Stage : Ukuran canvas dan propertinya
@@ -119,41 +120,42 @@ $(document.body).keydown(function (ev) {
   if((ev.key == ' ' || ev.key == 'ArrowRight' || ev.key == 'ArrowLeft' ) && ev.target == document.body) {
     ev.preventDefault();
   }
+  if(!typing){
+    if(ev.key == 'w')
+      keydowns['w'] = true;
+    if(ev.key == 's')
+      keydowns['s'] = true;
+    if(ev.key == 'a')
+      keydowns['a'] = true;
+    if(ev.key == 'd')
+      keydowns['d'] = true;
 
-  if(ev.key == 'w')
-    keydowns['w'] = true;
-  if(ev.key == 's')
-    keydowns['s'] = true;
-  if(ev.key == 'a')
-    keydowns['a'] = true;
-  if(ev.key == 'd')
-    keydowns['d'] = true;
+    let player = players[myID];
+    
+    let s = Math.sin(player.rotation * Math.PI / 180)
+    let c = Math.cos(player.rotation * Math.PI / 180)
+    // console.log(player.x, player.y, stage.width(), stage.height())
 
-  let player = players[myID];
-  
-  let s = Math.sin(player.rotation * Math.PI / 180)
-  let c = Math.cos(player.rotation * Math.PI / 180)
-  // console.log(player.x, player.y, stage.width(), stage.height())
+    if(player.x < stage.width() && player.x > 0 && player.y > 0 && player.y < stage.height()) {
 
-  if(player.x < stage.width() && player.x > 0 && player.y > 0 && player.y < stage.height()) {
+      if(keydowns['w']){
+        player.x = player.x + velocity * s ;
+        player.y = player.y - velocity * c ;
+      }
+      if(keydowns['s']){
+        player.x = player.x - velocity * s ;
+        player.y = player.y + velocity * c ;
+      }
+      if(keydowns['a'])
+        player.rotation-=velocity;
+      if(keydowns['d'])
+        player.rotation+=velocity;
 
-    if(keydowns['w']){
-      player.x = player.x + velocity * s ;
-      player.y = player.y - velocity * c ;
+    }else{
+      // Jika nabrak, respawn di tempat random
+      player.x = randomX();
+      player.y = randomY(); 
     }
-    if(keydowns['s']){
-      player.x = player.x - velocity * s ;
-      player.y = player.y + velocity * c ;
-    }
-    if(keydowns['a'])
-      player.rotation-=velocity;
-    if(keydowns['d'])
-      player.rotation+=velocity;
-
-  }else{
-    // Jika nabrak, respawn di tempat random
-    player.x = randomX();
-    player.y = randomY(); 
   }
 
 });
@@ -173,6 +175,9 @@ stage.on('click', function () {
 /**
  * Chat : Send and receive message
  */
+$("#chat-input").focus(e => typing = true);
+$("#chat-input").blur(e => typing = false);
+
 $('#btnSend').click(function () {
   sendMsg();
 });
@@ -184,3 +189,9 @@ function sendMsg() {
 
   messageToServer(msg);
 }
+
+function receiveMsg(sender, msg) {
+  showIncomingChat(sender, msg);
+}
+
+export { receiveMsg };
