@@ -48,7 +48,7 @@ function addPlayerToList(playerId) {
         `
         <div class="flex gap-1">
             <input type="checkbox" class="my-auto playeroption" name="playercheckbox" id="${playerId}" value="${playerId}" >
-            <label for="radio" class="cursor-pointer">${playerId}</label>
+            <label for="${playerId}" class="cursor-pointer">${playerId}</label>
         </div>
         `
     );
@@ -70,7 +70,7 @@ function getAllChecked() {
         }
     } 
 
-    console.log(checked);
+    return checked;
 }
 
 export { showIncomingChat, showSendingChat, checkAll, getAllChecked, addPlayerToList, showSystemChat };

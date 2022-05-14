@@ -281,7 +281,7 @@ function sendMsg() {
     $("#chat-input").val("");
     showSendingChat(msg);
 
-    messageToServer(msg);
+    messageToServer(msg, getAllChecked());
 }
 
 function receiveMsg(sender, msg) {

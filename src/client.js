@@ -53,24 +53,13 @@ function createRoom() {
 }
 btnCreate.addEventListener("click", createRoom);
 
-function messageToServer(msg) {
+function messageToServer(msg, target) {
     const payLoad = {
         "method": "message",
         "clientId": clientId,
         "roomId": roomId,
-        "message": msg
-    }
-
-    ws.send(JSON.stringify(payLoad));
-}
-
-function messageToPlayer(msg, playerId) {
-    const payLoad = {
-        "method": "message",
-        "clientId": clientId,
-        "target": playerId,
-        "roomId": roomId,
-        "message": msg
+        "message": msg,
+        "target": target
     }
 
     ws.send(JSON.stringify(payLoad));
