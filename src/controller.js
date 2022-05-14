@@ -232,9 +232,14 @@ function movingLoop(keydowns) {
 
 $(document.body).on("keyup", function (ev) {
     keydowns[ev.key] = false;
-    stopMoving();
-    clearTimeout(movingTimeout);
-    movingTimeout = -1;
+    if (ev.key == "w") keydowns["w"] = false;
+    if (ev.key == "s") keydowns["s"] = false;
+    if (ev.key == "a") keydowns["a"] = false;
+    if (ev.key == "d") keydowns["d"] = false;
+
+    if (!keydowns["w"] && !keydowns["s"] && !keydowns["a"] && !keydowns["d"]) {
+        stopMoving();
+    }
 });
 
 /**
