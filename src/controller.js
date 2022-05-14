@@ -26,6 +26,12 @@ let keydowns = [];
 let typing = false;
 let atkGun = null;
 let atkSword = null;
+let swordChar = [
+  {x: -5, y: -charSize/4, rotation: 30}, 
+  {x: 12, y: -charSize/2, rotation: 45}, 
+  {x: -charSize/2, y: 0, rotation: 0},
+  {x: -charSize/2-5, y: -10, rotation: 0}
+];
 
 /**
  * Stage : Ukuran canvas dan propertinya
@@ -54,6 +60,8 @@ Konva.Image.fromURL('/assets/tembok.png', function (tembok) {
 function initPlayer(id, num) {
   let char = null;
   var charObj = new Image();
+  var swordObj = new Image();
+  swordObj.src = '/assets/sword.png';
   charObj.src = '/assets/char'+num+'.png';
   charObj.onload =  function () {
     char = new Konva.Group({
@@ -83,8 +91,18 @@ function initPlayer(id, num) {
       fill: 'white',
     });
 
+    var imgSword = new Konva.Image({
+      x: swordChar[num-1].x,
+      y: swordChar[num-1].y,
+      image: swordObj,
+      width: charSize,
+      height: charSize,
+      rotation: swordChar[num-1].rotation
+    });
+
     char.add(imgChar);
     char.add(txtChar);
+    char.add(imgSword);
 
     players[id].obj = char;
 
@@ -93,8 +111,10 @@ function initPlayer(id, num) {
   };
 }
 
-players[myID] = new Player(myID, "Sisuka", 2)
+players[myID] = new Player(myID, "Sisuka", 1)
 players['ID2'] = new Player('ID2', "Sasuke", 2)
+players['ID3'] = new Player('ID3', "Sasaki", 3)
+players['ID4'] = new Player('ID4', "Sasiki", 4)
 
 /**
  * Stage Adder : Tambahkan layer ke stage
