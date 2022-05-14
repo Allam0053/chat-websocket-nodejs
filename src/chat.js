@@ -1,5 +1,18 @@
 import $ from "jquery";
 
+function showSystemChat(msg) {
+    $('#chats').append(
+        `
+        <div class="chatCenter">
+            <div class="text flex max-w-max">
+                <span class="block">${msg}</span>
+            </div>
+        </div>
+        `
+    );
+    $("#chats").scrollTop($("#chats")[0].scrollHeight);
+}
+
 function showIncomingChat(sender, msg) {
     $('#chats').append(
         `
@@ -30,4 +43,34 @@ function showSendingChat(msg) {
 
 }
 
-export { showIncomingChat, showSendingChat };
+function addPlayerToList(playerId) {
+    $('#playerlist').prepend(
+        `
+        <div class="flex gap-1">
+            <input type="checkbox" class="my-auto playeroption" name="playercheckbox" id="${playerId}" value="${playerId}" >
+            <label for="radio" class="cursor-pointer">${playerId}</label>
+        </div>
+        `
+    );
+}
+
+function checkAll() {
+    var inputs = $('.playeroption');
+    for (var i = 0; i < inputs.length; i++) { 
+        inputs[i].checked = true; 
+    } 
+}
+
+function getAllChecked() {
+    let checked = [];
+    var inputs = $('.playeroption');
+    for (var i = 0; i < inputs.length; i++) { 
+        if(inputs[i].checked == true){
+            checked.push(inputs[i].value);
+        }
+    } 
+
+    console.log(checked);
+}
+
+export { showIncomingChat, showSendingChat, checkAll, getAllChecked, addPlayerToList, showSystemChat };

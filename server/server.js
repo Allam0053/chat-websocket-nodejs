@@ -66,6 +66,7 @@ wsServer.on("request", (request) => {
             const payLoad = {
                 method: "join",
                 room: room,
+                newPlayer: clientId,
             };
             console.log(clientId + " has joined #" + roomId);
 

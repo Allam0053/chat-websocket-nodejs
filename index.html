@@ -31,13 +31,7 @@
                 <div id="showuname" class="box-title">
                     Happy Playing !
                 </div>
-                <span class="font-semibold text-green-400 text-center">RoomID : </span>
-                <div id="room-id" class="text-center btn-secondary">
-                    Not Joined
-                </div>
-                <span class="font-semibold text-green-400 text-center mb-4">Username : </span>
-                <input class="text-input" id="username" type="text" placeholder="Enter your name">
-                <hr class="my-4">
+
                 <button id = 'btnCreate' class="btn">Create Room</button>
                 <div class="or my-4 text-center">
                     <h3>----- OR -----</h3>
@@ -45,6 +39,19 @@
                 <input class="text-input" id="txtRoomId" type="text" placeholder="ID Room">
                 <div id  = 'divPlayers'></div>
                 <button id = 'btnJoin' class="btn">Join Room</button>
+                
+                <hr class="my-4">
+
+                <div class="flex gap-2">
+                    <div class="left flex-1">
+                        <span class="font-semibold text-green-400">RoomID : </span>
+                        <input class="text-input mt-2" id="room-id" type="text" disabled value="Not Joined">
+                    </div>
+                    <div class="right flex-1">
+                        <span class="font-semibold text-green-400">Username : </span>
+                        <input class="text-input mt-2" id="username" type="text" placeholder="Enter your name">
+                    </div>
+                </div>
             </div>
 
             <div id="canvascontainer" class="flex-1 hidden"></div>
@@ -58,9 +65,15 @@
             </div>
             
             <div id="msgbox" class="box flex-1 flex flex-col">
-                <div class="box-title">
-                    <h2>Message Box</h2>
+
+                <div id="playerlist" class="text-blue-300 flex text-sm flex-wrap gap-3 bg-gray-900 p-3 rounded">
+                    
+
+                    <button id="checkallbtn" class="btn w-full text-center" >
+                        Global
+                    </button>
                 </div>
+
                 <div id="chats" class="chats flex flex-col gap-2 overflow-y-auto  scrollbar pr-2 my-4 text-sm">
                     <div class="chatL">
                         <span class="block text-green-900 font-extrabold mb-1">RushUh.In</span>

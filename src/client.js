@@ -1,5 +1,5 @@
 import $ from "jquery";
-import { showIncomingChat } from "./chat";
+import { showIncomingChat, showSystemChat, addPlayerToList } from "./chat";
 
 /**
  * File for configuring connection between client and server
@@ -64,24 +64,36 @@ function messageToServer(msg) {
     ws.send(JSON.stringify(payLoad));
 }
 
+function messageToPlayer(msg, playerId) {
+    const payLoad = {
+        "method": "message",
+        "clientId": clientId,
+        "target": playerId,
+        "roomId": roomId,
+        "message": msg
+    }
+
+    ws.send(JSON.stringify(payLoad));
+}
+
 $('#room-id').on('click', function() {
     navigator.clipboard.writeText(roomId);
     // alert("Copied text: " + roomId);
 });
-$('#room-id').on('mouseover', function() {
-    if(roomId != 'Not Joined'){
-        if(roomId)
-            this.innerText = "Click To Copy RoomID";
-    }
-});
-$('#room-id').on('mouseout', function() {
-    if(roomId != 'Not Joined'){
-        if(roomId)
-            this.innerText = roomId;
-        else
-            this.innerText = 'Not Joined'
-    }
-});
+// $('#room-id').on('mouseover', function() {
+//     if(roomId != 'Not Joined'){
+//         if(roomId)
+//             this.value = "Copy RoomID";
+//     }
+// });
+// $('#room-id').on('mouseout', function() {
+//     if(roomId != 'Not Joined'){
+//         if(roomId)
+//             this.value = roomId;
+//         else
+//             this.value = 'Not Joined'
+//     }
+// });
 
 $('#username').on('change', function() {
     username = this.value;
@@ -109,7 +121,8 @@ ws.onmessage = message => {
     // create
     if (response.method === "create"){
         roomId = response.room.id;
-        $('#room-id').text(roomId);
+        $('#room-id').prop('disabled', false);
+        $('#room-id').val(roomId);
     }
 
     // update
@@ -122,7 +135,14 @@ ws.onmessage = message => {
     // join
     if (response.method === "join"){
         roomId = response.room.id;
-        $('#room-id').text(roomId);
+        $('#room-id').prop('disabled', false);
+        $('#room-id').val(roomId);
+
+        // Setiap menerima join baru, update UI player list
+        addPlayerToList(response.newPlayer);
+
+        // Draw notification of new player has joined
+        showSystemChat(response.newPlayer + ' has joined the room');
     }
 
     // chat

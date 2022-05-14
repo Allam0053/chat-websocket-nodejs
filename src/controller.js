@@ -1,6 +1,6 @@
 import $ from "jquery";
 import Konva from "konva";
-import { showIncomingChat, showSendingChat } from "./chat";
+import { showIncomingChat, showSendingChat, checkAll, getAllChecked } from "./chat";
 import { messageToServer } from "./client";
 
 /**
@@ -264,12 +264,16 @@ $("#chat-input").blur((e) => (typing = false));
 
 $("#btnSend").click(function () {
     sendMsg();
+    getAllChecked();
 });
 $("#chat-input").on("keypress", (e) => {
     if (e.key == "Enter") {
         e.preventDefault();
         sendMsg();
     }
+});
+$('#checkallbtn').click(function () {
+  checkAll();
 });
 
 function sendMsg() {
