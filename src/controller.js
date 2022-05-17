@@ -13,6 +13,7 @@ class Player {
         this.num = num;
         this.x = randomX();
         this.y = randomY();
+        this.score = 0;
         this.rotation = randomRotation();
         this.obj = initPlayer(this.id, this.num);
     }
@@ -84,12 +85,24 @@ function initPlayer(id, num) {
         });
 
         var txtChar = new Konva.Text({
-            x: charSize / 2 - 15,
+            // x: charSize / 2 - 15,
             y: charSize,
             text: players[id].name,
             fontSize: 10,
             fontFamily: "Inter",
             fill: "white",
+            width: charSize,
+            align: "center",
+        });
+
+        var txtScore = new Konva.Text({
+            y: -10,
+            text: players[id].score,
+            fontSize: 10,
+            fontFamily: "Inter",
+            fill: "white",
+            width: charSize,
+            align: "center",
         });
 
         var imgSword = new Konva.Image({
@@ -103,6 +116,7 @@ function initPlayer(id, num) {
 
         char.add(imgChar);
         char.add(txtChar);
+        char.add(txtScore);
         char.add(imgSword);
 
         players[id].obj = char;
@@ -111,7 +125,7 @@ function initPlayer(id, num) {
     };
 }
 
-players[myID] = new Player(myID, "Sisuka", 1);
+players[myID] = new Player(myID, "Sisuka Minamino", 1);
 players["ID2"] = new Player("ID2", "Sasuke", 2);
 players["ID3"] = new Player("ID3", "Sasaki", 3);
 players["ID4"] = new Player("ID4", "Sasiki", 4);
