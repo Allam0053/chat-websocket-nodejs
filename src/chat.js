@@ -1,7 +1,7 @@
 import $ from "jquery";
 
 function showSystemChat(msg) {
-    $('#chats').append(
+    $("#chats").append(
         `
         <div class="chatCenter">
             <div class="text flex max-w-max">
@@ -14,7 +14,7 @@ function showSystemChat(msg) {
 }
 
 function showIncomingChat(sender, msg) {
-    $('#chats').append(
+    $("#chats").append(
         `
         <div class="chatL">
             <span class="block text-green-900 font-extrabold mb-1">${sender}</span>
@@ -26,10 +26,10 @@ function showIncomingChat(sender, msg) {
         `
     );
     $("#chats").scrollTop($("#chats")[0].scrollHeight);
-
 }
+
 function showSendingChat(msg) {
-    $('#chats').append(
+    $("#chats").append(
         `
         <div class="chatR">
             <div class="text flex max-w-max">
@@ -40,11 +40,10 @@ function showSendingChat(msg) {
         `
     );
     $("#chats").scrollTop($("#chats")[0].scrollHeight);
-
 }
 
 function addPlayerToList(playerId) {
-    $('#playerlist').prepend(
+    $("#playerlist").prepend(
         `
         <div class="flex gap-1">
             <input type="checkbox" class="my-auto playeroption" name="playercheckbox" id="${playerId}" value="${playerId}" >
@@ -55,22 +54,29 @@ function addPlayerToList(playerId) {
 }
 
 function checkAll() {
-    var inputs = $('.playeroption');
-    for (var i = 0; i < inputs.length; i++) { 
-        inputs[i].checked = true; 
-    } 
+    var inputs = $(".playeroption");
+    for (var i = 0; i < inputs.length; i++) {
+        inputs[i].checked = true;
+    }
 }
 
 function getAllChecked() {
     let checked = [];
-    var inputs = $('.playeroption');
-    for (var i = 0; i < inputs.length; i++) { 
-        if(inputs[i].checked == true){
+    var inputs = $(".playeroption");
+    for (var i = 0; i < inputs.length; i++) {
+        if (inputs[i].checked == true) {
             checked.push(inputs[i].value);
         }
-    } 
+    }
 
     return checked;
 }
 
-export { showIncomingChat, showSendingChat, checkAll, getAllChecked, addPlayerToList, showSystemChat };
+export {
+    showIncomingChat,
+    showSendingChat,
+    checkAll,
+    getAllChecked,
+    addPlayerToList,
+    showSystemChat,
+};

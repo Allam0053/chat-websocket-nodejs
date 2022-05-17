@@ -1,6 +1,11 @@
 import $ from "jquery";
 import Konva from "konva";
-import { showIncomingChat, showSendingChat, checkAll, getAllChecked } from "./chat";
+import {
+    showIncomingChat,
+    showSendingChat,
+    checkAll,
+    getAllChecked,
+} from "./chat";
 import { messageToServer } from "./client";
 
 /**
@@ -286,8 +291,8 @@ $("#chat-input").on("keypress", (e) => {
         sendMsg();
     }
 });
-$('#checkallbtn').click(function () {
-  checkAll();
+$("#checkallbtn").click(function () {
+    checkAll();
 });
 
 function sendMsg() {
