@@ -94,9 +94,10 @@ wsServer.on("request", (request) => {
 
             room.clients.forEach((c) => {
                 // Send only to the target
-                if(target.includes(c.clientId))
-                {
-                    clients[c.clientId].connection.send(JSON.stringify(payLoad));
+                if (target.includes(c.clientId)) {
+                    clients[c.clientId].connection.send(
+                        JSON.stringify(payLoad)
+                    );
                 }
             });
         }

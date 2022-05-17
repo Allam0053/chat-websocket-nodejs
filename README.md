@@ -1,7 +1,7 @@
 # RushUh.in 🤺
 
 <p align="center">
-    <img src="logo.png" alt="RushUh.in" width="20%">
+    <img src="assets/cover.png" alt="RushUh.in" width="20%">
 </p>
 
 Rushuh.In is a Javascipt based 2D Game with Socket Programming. Build for final assignment of Computer Network 2022 at Institut Teknologi Sepuluh Nopember.
