@@ -1,5 +1,6 @@
 import $ from "jquery";
 import { showIncomingChat, showSystemChat, addPlayerToList } from "./chat";
+import { addPlayer } from "./controller";
 
 /**
  * File for configuring connection between client and server
@@ -23,52 +24,49 @@ const divPlayers = document.getElementById("divPlayers");
 const divBoard = document.getElementById("divBoard");
 
 // wiring events
-btnJoin.addEventListener("click", e => {
+btnJoin.addEventListener("click", (e) => {
+    if (roomId === null) roomId = txtRoomId.value;
 
-    if (roomId === null)
-        roomId = txtRoomId.value;
-    
     const payLoad = {
-        "method": "join",
-        "clientId": clientId,
-        "roomId": roomId
-    }
+        method: "join",
+        clientId: clientId,
+        roomId: roomId,
+    };
 
-    console.log(payLoad);
+    // console.log(payLoad);
 
     ws.send(JSON.stringify(payLoad));
     updateCanvasState(true);
-
-
-})
+});
 
 function createRoom() {
     const payLoad = {
-        "method": "create",
-        "clientId": clientId
-    }
+        method: "create",
+        clientId: clientId,
+    };
 
-    ws.send(JSON.stringify(payLoad));  
+    ws.send(JSON.stringify(payLoad));
     updateCanvasState(true);
 }
 btnCreate.addEventListener("click", createRoom);
 
 function messageToServer(msg, target) {
     const payLoad = {
-        "method": "message",
-        "clientId": clientId,
-        "roomId": roomId,
-        "message": msg,
-        "target": target
-    }
+        method: "message",
+        clientId: clientId,
+        roomId: roomId,
+        message: msg,
+        target: target,
+    };
 
     ws.send(JSON.stringify(payLoad));
 }
 
-$('#room-id').on('click', function() {
+$("#room-id").on("click", function () {
     navigator.clipboard.writeText(roomId);
     // alert("Copied text: " + roomId);
 });
+
 // $('#room-id').on('mouseover', function() {
 //     if(roomId != 'Not Joined'){
 //         if(roomId)
@@ -84,64 +82,67 @@ $('#room-id').on('click', function() {
 //     }
 // });
 
-$('#username').on('change', function() {
+$("#username").on("change", function () {
     username = this.value;
 });
 
 function updateCanvasState(shown) {
-    $('#canvascontainer').toggleClass('hidden');
-    $('#splash').toggleClass('hidden');
-    
-    $('#btnSend').prop('disabled', !shown);
-    $('#chat-input').prop('disabled', !shown);
+    $("#canvascontainer").toggleClass("hidden");
+    $("#splash").toggleClass("hidden");
+
+    $("#btnSend").prop("disabled", !shown);
+    $("#chat-input").prop("disabled", !shown);
 }
 
-ws.onmessage = message => {
+ws.onmessage = (message) => {
     // message.data
     const response = JSON.parse(message.data);
 
     // connect
-    if (response.method === "connect"){
+    if (response.method === "connect") {
         clientId = response.clientId;
-        $('#username').val(clientId);
+        $("#username").val(clientId);
         username = clientId;
     }
 
     // create
-    if (response.method === "create"){
+    if (response.method === "create") {
         roomId = response.room.id;
-        $('#room-id').prop('disabled', false);
-        $('#room-id').val(roomId);
+        $("#room-id").prop("disabled", false);
+        $("#room-id").val(roomId);
     }
 
     // update
-    if (response.method === "update"){
-        
-        // not implemented
-
+    if (response.method === "update") {
+        // Update players GUI based oon received pose
     }
 
     // join
-    if (response.method === "join"){
+    if (response.method === "join") {
         roomId = response.room.id;
-        $('#room-id').prop('disabled', false);
-        $('#room-id').val(roomId);
+        $("#room-id").prop("disabled", false);
+        $("#room-id").val(roomId);
+
+        let roomClients = response.room.clients;
+        let newPlayer = roomClients[roomClients.length - 1];
 
         // Setiap menerima join baru, update UI player list
-        addPlayerToList(response.newPlayer);
+        addPlayerToList(newPlayer.clientId);
 
         // Draw notification of new player has joined
-        showSystemChat(response.newPlayer + ' has joined the room');
+        showSystemChat(newPlayer.clientId + " has joined the room");
+
+        // Gambar ulang semua player
+        addPlayer(roomClients, clientId);
     }
 
     // chat
-    if (response.method === "message"){
+    if (response.method === "message") {
         messages = response.messages;
-        console.log(messages);
-        if(messages.sender != clientId){
+        if (messages.sender != clientId) {
             showIncomingChat(messages.sender, messages.message);
         }
     }
-}
+};
 
 export { messageToServer };

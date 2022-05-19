@@ -36,16 +36,26 @@ wsServer.on("request", (request) => {
             const roomId = guidRoom();
             rooms[roomId] = {
                 id: roomId,
-                clients: [{ clientId: clientId }],
+                clients: [
+                    {
+                        clientId: clientId,
+                        x: randomX(),
+                        y: randomY(),
+                        rotation: randomRotation(),
+                        score: 100,
+                        num: 1,
+                    },
+                ],
                 messages: [],
             };
+            const room = rooms[roomId];
 
             const payLoad = {
-                method: "create",
-                room: rooms[roomId],
+                method: "join",
+                room: room,
             };
-
             console.log(clientId + " has created #" + roomId);
+            // console.log(payLoad);
 
             const con = clients[clientId].connection;
             con.send(JSON.stringify(payLoad));
@@ -60,15 +70,20 @@ wsServer.on("request", (request) => {
             if (!isPlayerJoined(roomId, clientId)) {
                 room.clients.push({
                     clientId: clientId,
+                    x: randomX(),
+                    y: randomY(),
+                    rotation: randomRotation(),
+                    score: 100,
+                    num: room.clients.length + 1,
                 });
             }
 
             const payLoad = {
                 method: "join",
                 room: room,
-                newPlayer: clientId,
             };
             console.log(clientId + " has joined #" + roomId);
+            // console.log(payLoad);
 
             // loop through all clients and tell them that people has joined
             room.clients.forEach((c) => {
@@ -158,3 +173,22 @@ function S4() {
 const guidRoom = () => ("R" + S4()).toUpperCase();
 const guidUser = () => "User" + S4().toLowerCase();
 // const guid = () => (S4() + S4() + "-" + S4() + "-4" + S4().substr(0,3) + "-" + S4() + "-" + S4() + S4() + S4()).toLowerCase();
+
+/**
+ * Helper : Anything
+ */
+const charSize = 70;
+const stageH = 700;
+const stageW = 1100;
+
+function randomY() {
+    return Math.random() * (stageH - charSize * 2) + charSize;
+}
+
+function randomX() {
+    return Math.random() * (stageW - charSize * 2) + charSize;
+}
+
+function randomRotation() {
+    return Math.random() * 360;
+}

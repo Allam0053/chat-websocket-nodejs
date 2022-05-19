@@ -11,20 +11,20 @@ import { messageToServer } from "./client";
 /**
  * Global Variables
  */
+let players = [];
 class Player {
-    constructor(id, name, num) {
+    constructor(id, name, num, x, y, rotation, score) {
         this.id = id;
         this.name = name;
         this.num = num;
-        this.x = randomX();
-        this.y = randomY();
-        this.score = 0;
-        this.rotation = randomRotation();
+        this.x = x;
+        this.y = y;
+        this.rotation = rotation;
+        this.score = 100;
         this.obj = initPlayer(this.id, this.num);
     }
 }
-const myID = "ID1";
-let players = [];
+let myID = "ID1";
 const charSize = 70;
 const velocity = 5;
 const angularvelocity = 100;
@@ -130,30 +130,15 @@ function initPlayer(id, num) {
     };
 }
 
-players[myID] = new Player(myID, "Sisuka Minamino", 1);
-players["ID2"] = new Player("ID2", "Sasuke", 2);
-players["ID3"] = new Player("ID3", "Sasaki", 3);
-players["ID4"] = new Player("ID4", "Sasiki", 4);
+// players[myID] = new Player(myID, "Sisuka Minamino", 1);
+// players["ID2"] = new Player("ID2", "Sasuke", 2);
+// players["ID3"] = new Player("ID3", "Sasaki", 3);
+// players["ID4"] = new Player("ID4", "Sasiki", 4);
 
 /**
  * Stage Adder : Tambahkan layer ke stage
  */
 stage.add(baseLayer);
-
-/**
- * Helper : Anything
- */
-function randomY() {
-    return Math.random() * (stage.height() - charSize * 2) + charSize;
-}
-
-function randomX() {
-    return Math.random() * (stage.width() - charSize * 2) + charSize;
-}
-
-function randomRotation() {
-    return Math.random() * 360;
-}
 
 /**
  * Animator : Loop and update the canvas
@@ -173,10 +158,12 @@ anim.start();
 
 function updatePlayers(id) {
     let player = players[id];
-    if (player.obj != null) {
-        player.obj.x(player.x);
-        player.obj.y(player.y);
-        player.obj.rotation(player.rotation);
+    if (player) {
+        if (player.obj != null) {
+            player.obj.x(player.x);
+            player.obj.y(player.y);
+            player.obj.rotation(player.rotation);
+        }
     }
 }
 
@@ -200,18 +187,19 @@ $(document.body).on("keydown", function (ev) {
         let player = players[myID];
 
         // console.log(player.x, player.y, stage.width(), stage.height())
-
-        if (
-            player.x < stage.width() &&
-            player.x > 0 &&
-            player.y > 0 &&
-            player.y < stage.height()
-        ) {
-            startMoving(keydowns);
-        } else {
-            // Jika nabrak, respawn di tempat random
-            player.x = randomX();
-            player.y = randomY();
+        if (player) {
+            if (
+                player.x < stage.width() &&
+                player.x > 0 &&
+                player.y > 0 &&
+                player.y < stage.height()
+            ) {
+                startMoving(keydowns);
+            } else {
+                // Jika nabrak, respawn di tempat random
+                player.x = randomX();
+                player.y = randomY();
+            }
         }
     }
 });
@@ -276,6 +264,30 @@ stage.on("click", function () {
 });
 
 /**
+ * Add players by received data
+ *
+ */
+function addPlayer(arr, IDku) {
+    if (IDku) myID = IDku;
+
+    let obj = null;
+    for (let i in arr) {
+        obj = arr[i];
+        if (players[obj.clientId] == null) {
+            players[obj.clientId] = new Player(
+                obj.clientId,
+                obj.name,
+                obj.num,
+                obj.x,
+                obj.y,
+                obj.rotation,
+                obj.score
+            );
+        }
+    }
+}
+
+/**
  * Chat : Send and receive message
  */
 $("#chat-input").focus((e) => (typing = true));
@@ -307,4 +319,4 @@ function receiveMsg(sender, msg) {
     showIncomingChat(sender, msg);
 }
 
-export { receiveMsg };
+export { receiveMsg, addPlayer };
