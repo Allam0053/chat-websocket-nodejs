@@ -6,12 +6,12 @@ import {
     checkAll,
     getAllChecked,
 } from "./chat";
-import { messageToServer } from "./client";
+import { messageToServer, sendDataToServer } from "./client";
 
 /**
  * Global Variables
  */
-let players = [];
+let players = new Array();
 class Player {
     constructor(id, name, num, x, y, rotation, score) {
         this.id = id;
@@ -130,21 +130,29 @@ function initPlayer(id, num) {
     };
 }
 
-// players[myID] = new Player(myID, "Sisuka Minamino", 1);
-// players["ID2"] = new Player("ID2", "Sasuke", 2);
-// players["ID3"] = new Player("ID3", "Sasaki", 3);
-// players["ID4"] = new Player("ID4", "Sasiki", 4);
-
 /**
  * Stage Adder : Tambahkan layer ke stage
  */
 stage.add(baseLayer);
 
 /**
+ * Looper sender
+ *
+ */
+setInterval(() => {
+    if (Object.keys(players).length > 0) {
+        // console.log("DARI CLIENT", players);
+        sendDataToServer(Object.assign({}, players));
+    }
+}, 1000 / 30);
+
+/**
  * Animator : Loop and update the canvas
  */
 var anim = new Konva.Animation(function (frame) {
-    updatePlayers(myID);
+    for (const key in players) {
+        updatePlayers(players[key].id);
+    }
 
     var angleDiff = (frame.timeDiff * angularvelocity) / 100;
 
@@ -167,6 +175,36 @@ function updatePlayers(id) {
     }
 }
 
+function updateOtherPlayers(clients) {
+    for (const key in clients) {
+        if (clients[key].id != myID) {
+            // console.log("Updating client #" + clients[key].id);
+            players[key].x = clients[key].x;
+            players[key].y = clients[key].y;
+            players[key].rotation = clients[key].rotation;
+            players[key].score = clients[key].score;
+        }
+    }
+}
+
+/**
+ * Helper : Anything
+ */
+const stageH = 700;
+const stageW = 1100;
+
+function randomY() {
+    return Math.random() * (stageH - charSize * 2) + charSize;
+}
+
+function randomX() {
+    return Math.random() * (stageW - charSize * 2) + charSize;
+}
+
+function randomRotation() {
+    return Math.random() * 360;
+}
+
 /**
  * Event Listener : Keyboard
  */
@@ -186,7 +224,6 @@ $(document.body).on("keydown", function (ev) {
 
         let player = players[myID];
 
-        // console.log(player.x, player.y, stage.width(), stage.height())
         if (player) {
             if (
                 player.x < stage.width() &&
@@ -319,4 +356,4 @@ function receiveMsg(sender, msg) {
     showIncomingChat(sender, msg);
 }
 
-export { receiveMsg, addPlayer };
+export { receiveMsg, addPlayer, updateOtherPlayers };

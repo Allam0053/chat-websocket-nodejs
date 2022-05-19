@@ -1,6 +1,6 @@
 import $ from "jquery";
 import { showIncomingChat, showSystemChat, addPlayerToList } from "./chat";
-import { addPlayer } from "./controller";
+import { addPlayer, updateOtherPlayers } from "./controller";
 
 /**
  * File for configuring connection between client and server
@@ -115,6 +115,8 @@ ws.onmessage = (message) => {
     // update
     if (response.method === "update") {
         // Update players GUI based oon received pose
+        // console.log("DARI SERVER: ", response.clients);
+        updateOtherPlayers(response.clients);
     }
 
     // join
@@ -145,4 +147,15 @@ ws.onmessage = (message) => {
     }
 };
 
-export { messageToServer };
+function sendDataToServer(clients) {
+    const payLoad = {
+        method: "update",
+        roomId: roomId,
+        clients: clients,
+    };
+
+    // console.log("DARI CLIENT", payLoad);
+    ws.send(JSON.stringify(payLoad));
+}
+
+export { messageToServer, sendDataToServer };

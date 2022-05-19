@@ -116,6 +116,19 @@ wsServer.on("request", (request) => {
                 }
             });
         }
+
+        if (result.method === "update") {
+            const roomId = result.roomId;
+            const room = rooms[roomId];
+            const payLoad = {
+                method: "update",
+                clients: result.clients,
+            };
+
+            room.clients.forEach((c) => {
+                clients[c.clientId].connection.send(JSON.stringify(payLoad));
+            });
+        }
     });
 
     // generate a new clientId
