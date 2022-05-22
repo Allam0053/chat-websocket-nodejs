@@ -9,12 +9,12 @@ Rushuh.In is a Javascipt based 2D Game with Socket Programming. Build for final 
 <br>
 
 ## Build with 💕 By
-| No | Nama                 | NRP            |
-|----|----------------------|----------------|
-| 1  | M Faderik Izzul Haq  | 05111940000023 |
-| 2  | Allam Taju Sarof     | 05111940000053 |
-| 3  | Achmad Akbar Irwanda | 05111940000138 |
-| 4  | Iwan Dwi Prakoso     | 05111940000229 |
+| No | Nama                 | NRP            | Username     |
+|----|----------------------|----------------|--------------|
+| 1  | M Faderik Izzul Haq  | 05111940000023 | faderik      |
+| 2  | Allam Taju Sarof     | 05111940000053 | Allam0053    |
+| 3  | Achmad Akbar Irwanda | 05111940000138 | Irwnda       |
+| 4  | Iwan Dwi Prakoso     | 05111940000229 | iwandepe     |
 
 ## How To Run
 0. Perpare your environement for yarn project
@@ -25,5 +25,8 @@ Rushuh.In is a Javascipt based 2D Game with Socket Programming. Build for final 
 5. Run client with `yarn client`
 
 ## How To Play
-1. Press WASD to move
-2. Left click to attack with rotation
+1. Open the URL <a href="http://localhost:3000">Here</a>
+2. Join / Make the room
+3. Invite other user by copy the room ID
+4. Start moving by pressing WASD buttons
+5. You can attack enemy by pressing left click
