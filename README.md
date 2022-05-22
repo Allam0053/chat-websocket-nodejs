@@ -9,12 +9,12 @@ Rushuh.In is a Javascipt based 2D Game with Socket Programming. Build for final 
 <br>
 
 ## Build with 💕 By
-| No | Nama                 | NRP            | Username     |
-|----|----------------------|----------------|--------------|
-| 1  | M Faderik Izzul Haq  | 05111940000023 | faderik      |
-| 2  | Allam Taju Sarof     | 05111940000053 | Allam0053    |
-| 3  | Achmad Akbar Irwanda | 05111940000138 | Irwnda       |
-| 4  | Iwan Dwi Prakoso     | 05111940000229 | iwandepe     |
+| No | Nama                 | NRP            | Username                                                |
+|----|----------------------|----------------|---------------------------------------------------------|
+| 1  | M Faderik Izzul Haq  | 05111940000023 | <a href="https://github.com/faderik">faderik</a>        |
+| 2  | Allam Taju Sarof     | 05111940000053 | <a href="https://github.com/Allam0053">Allam0053</a>    |
+| 3  | Achmad Akbar Irwanda | 05111940000138 | <a href="https://github.com/Irwnda">Irwnda</a>          |
+| 4  | Iwan Dwi Prakoso     | 05111940000229 | <a href="https://github.com/iwandepe">iwandepe</a>      |
 
 ## How To Run
 0. Perpare your environement for yarn project
