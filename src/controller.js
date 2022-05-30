@@ -1,5 +1,6 @@
 import $ from "jquery";
 import Konva from "konva";
+import { client } from "websocket";
 import {
     showIncomingChat,
     showSendingChat,
@@ -22,6 +23,7 @@ class Player {
         this.rotation = rotation;
         this.score = 100;
         this.obj = initPlayer(this.id, this.num);
+        this.attackMode = false;
     }
 }
 let myID = "ID1";
@@ -108,6 +110,7 @@ function initPlayer(id, num) {
             fill: "white",
             width: charSize,
             align: "center",
+            id: "scoreText",
         });
 
         var imgSword = new Konva.Image({
@@ -158,7 +161,8 @@ var anim = new Konva.Animation(function (frame) {
 
     if (atkSword) {
         players[myID].rotation += angleDiff;
-    }
+    } 
+
     if (atkGun) {
     }
 }, baseLayer);
@@ -183,7 +187,23 @@ function updateOtherPlayers(clients) {
             players[key].y = clients[key].y;
             players[key].rotation = clients[key].rotation;
             players[key].score = clients[key].score;
+
+            if (
+                clients[key].attackMode &&
+                clients[key].x < players[myID].x + 50 &&
+                clients[key].x > players[myID].x - 50 &&
+                clients[key].y < players[myID].y + 50 &&
+                clients[key].y > players[myID].y - 50
+            ) {
+                console.log('AW AKU TERTUSUK JANJI MANISMU!');
+                players[myID].score -= 1;
+            }
         }
+        players[key].obj
+            .getChildren(function (node) {
+                return node.getAttr("id") === "scoreText";
+            })[0]
+            .setAttr("text", players[key].score);
     }
 }
 
@@ -295,8 +315,10 @@ stage.on("click", function () {
 
     // Muter selama 1 detik
     atkSword = true;
+    players[myID].attackMode = true;
     setTimeout(() => {
         atkSword = false;
+        players[myID].attackMode = false;
     }, 1000);
 });
 
