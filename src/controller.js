@@ -23,7 +23,7 @@ class Player {
         this.rotation = rotation;
         this.score = 100;
         this.obj = initPlayer(this.id, this.num);
-        this.attackMode = false;
+        this.atkMode = false;
     }
 }
 let myID = "ID1";
@@ -189,16 +189,17 @@ function updateOtherPlayers(clients) {
             players[key].score = clients[key].score;
 
             if (
-                clients[key].attackMode &&
-                clients[key].x < players[myID].x + 50 &&
-                clients[key].x > players[myID].x - 50 &&
-                clients[key].y < players[myID].y + 50 &&
-                clients[key].y > players[myID].y - 50
+                clients[key].atkMode &&
+                clients[key].atkX < players[myID].x + 50 &&
+                clients[key].atkX > players[myID].x - 50 &&
+                clients[key].atkY < players[myID].y + 50 &&
+                clients[key].atkY > players[myID].y - 50
             ) {
-                console.log('AW AKU TERTUSUK JANJI MANISMU!');
+                // console.log('AW AKU TERTUSUK JANJI MANISMU!');
                 players[myID].score -= 1;
             }
         }
+
         players[key].obj
             .getChildren(function (node) {
                 return node.getAttr("id") === "scoreText";
@@ -315,10 +316,16 @@ stage.on("click", function () {
 
     // Muter selama 1 detik
     atkSword = true;
-    players[myID].attackMode = true;
+    players[myID].atkMode = true;
+    // TODO: adjust attack location to the sword position
+    // below code still use the center of the character
+    players[myID].atkX = players[myID].x;
+    players[myID].atkY = players[myID].y;
     setTimeout(() => {
         atkSword = false;
-        players[myID].attackMode = false;
+        players[myID].atkMode = false;
+        delete players[myID].atkX;
+        delete players[myID].atkY;
     }, 1000);
 });
 
