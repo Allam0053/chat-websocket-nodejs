@@ -57,6 +57,7 @@ wsServer.on("request", (request) => {
                         num: 1,
                     },
                 ],
+                score: [],
                 messages: [],
             };
             const room = rooms[roomId];
@@ -70,6 +71,10 @@ wsServer.on("request", (request) => {
 
             const con = clients[clientId].connection;
             con.send(JSON.stringify(payLoad));
+
+            setInterval(() => {
+                sendScore(roomId);
+            }, 500);
         }
 
         // a client want to join
@@ -78,6 +83,17 @@ wsServer.on("request", (request) => {
             const roomId = result.roomId;
             const room = rooms[roomId];
 
+            if (!isRoomExist(roomId)) {
+                const payLoad = {
+                    method: "error",
+                    messages: {
+                        sender: "client",
+                        message: "Room does not exist",
+                    },
+                };
+                clients[clientId].connection.send(JSON.stringify(payLoad));
+                return;
+            }
             if (!isPlayerJoined(roomId, clientId)) {
                 room.clients.push({
                     clientId: clientId,
@@ -138,6 +154,24 @@ wsServer.on("request", (request) => {
                 clients: result.clients,
             };
 
+            // updating the clients in server data
+            for (const key in result.clients) {
+                const dataClientInServer = room.clients.find(
+                    (c) => c.clientId === key
+                );
+                if (typeof dataClientInServer === "undefined") {
+                    console.log("cannot find client key: " + key);
+                    continue;
+                }
+                dataClientInServer.x = result.clients[key].x;
+                dataClientInServer.y = result.clients[key].y;
+                dataClientInServer.rotation = result.clients[key].rotation;
+                dataClientInServer.health = result.clients[key].health;
+                dataClientInServer.score = result.clients[key].score;
+                dataClientInServer.detailScore =
+                    result.clients[key].detailScore;
+            }
+
             room.clients.forEach((c) => {
                 if (c.clientId === result.clientId) {
                     return;
@@ -145,26 +179,6 @@ wsServer.on("request", (request) => {
                 clients[c.clientId].connection.send(JSON.stringify(payLoad));
             });
         }
-
-        // if (result.method === "score") {
-        //     const roomId = result.roomId;
-        //     const room = rooms[roomId];
-        //     const clientId = result.clientId;
-        //     const score = result.score;
-
-        //     const payLoad = {
-        //         method: "score",
-        //         score: score,
-        //     };
-
-        //     room.clients.forEach((c) => {
-        //         if (c.clientId === clientId) {
-        //             c.score = score;
-        //             c.detailScore.push(score);
-        //         }
-        //         clients[c.clientId].connection.send(JSON.stringify(payLoad));
-        //     });
-        // }
     });
 
     // generate a new clientId
@@ -181,6 +195,55 @@ wsServer.on("request", (request) => {
     //send back the client connect
     connection.send(JSON.stringify(payLoad));
 });
+
+function sendScore(roomId) {
+    const room = rooms[roomId];
+    const ranking = rankingMaker(roomId);
+    const payLoad = {
+        method: "score",
+        scores: ranking,
+    };
+
+    room.clients.forEach((c) => {
+        clients[c.clientId].connection.send(JSON.stringify(payLoad));
+    });
+}
+
+function rankingMaker(roomId) {
+    /**
+    [
+        {
+            playerId: string,
+            score: number
+        }
+    ]
+     */
+    const scoreByPlayer = [];
+    rooms[roomId].clients.forEach((c) => {
+        c.detailScore.forEach((d) => {
+            if (
+                scoreByPlayer.length === 0 ||
+                typeof scoreByPlayer.find(
+                    (playerScore) => playerScore.playerId === d.playerId
+                ) === "undefined"
+            ) {
+                scoreByPlayer.push({ playerId: d.playerId, score: d.score });
+            } else {
+                scoreByPlayer.find(
+                    (playerScore) => playerScore.playerId === d.playerId
+                ).score += d.score;
+            }
+        });
+    });
+
+    scoreByPlayer.sort((a, b) => b.score - a.score);
+
+    return Object.assign({}, scoreByPlayer);
+}
+
+function isRoomExist(roomId) {
+    return typeof rooms[roomId] !== "undefined";
+}
 
 /**
  *

@@ -6,6 +6,7 @@ import {
     showSendingChat,
     checkAll,
     getAllChecked,
+    showLeaderboard,
 } from "./chat";
 import { messageToServer, sendDataToServer } from "./client";
 
@@ -259,7 +260,8 @@ function updateOtherPlayers(clients) {
                 clients[key].atkX < players[myID].x + 50 &&
                 clients[key].atkX > players[myID].x - 50 &&
                 clients[key].atkY < players[myID].y + 50 &&
-                clients[key].atkY > players[myID].y - 50
+                clients[key].atkY > players[myID].y - 50 &&
+                players[myID].health > 0
             ) {
                 // console.log('AW AKU TERTUSUK JANJI MANISMU!');
                 players[myID].health -= 1;

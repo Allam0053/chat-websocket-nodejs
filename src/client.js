@@ -1,5 +1,10 @@
 import $ from "jquery";
-import { showIncomingChat, showSystemChat, addPlayerToList } from "./chat";
+import {
+    showIncomingChat,
+    showSystemChat,
+    addPlayerToList,
+    showLeaderboard,
+} from "./chat";
 import { addPlayer, updateOtherPlayers } from "./controller";
 
 /**
@@ -144,6 +149,18 @@ ws.onmessage = (message) => {
         if (messages.sender != clientId) {
             showIncomingChat(messages.sender, messages.message);
         }
+    }
+
+    // error msg
+    if (response.method === "error") {
+        messages = response.messages;
+        showIncomingChat(messages.sender, messages.message);
+    }
+
+    // incoming updated score
+    if (response.method === "score") {
+        // console.log(response.scores);
+        showLeaderboard(response.scores);
     }
 };
 

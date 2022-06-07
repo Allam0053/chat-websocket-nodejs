@@ -42,6 +42,28 @@ function showSendingChat(msg) {
     $("#chats").scrollTop($("#chats")[0].scrollHeight);
 }
 
+function playerScore(scores) {
+    let leaderboard = "";
+    for (const key in scores) {
+        leaderboard += `    
+        <div class='text-white text-sm font-bold'>${scores[key].playerId}</div><div class='text-white text-sm font-bold'>${scores[key].score}</div>
+        `;
+    }
+    return leaderboard;
+}
+
+function showLeaderboard(scores) {
+    // $("#leaderboard").html(playerScore(scores));
+    const urutan = playerScore(scores);
+    console.log(urutan);
+    $("#leaderboard").html(
+        `
+        <div class='text-white col-span-2 text-center'>LEADERBOARD</div>
+        ${urutan}
+        `
+    );
+}
+
 function addPlayerToList(playerId) {
     $("#playerlist").prepend(
         `
@@ -79,4 +101,5 @@ export {
     getAllChecked,
     addPlayerToList,
     showSystemChat,
+    showLeaderboard,
 };
