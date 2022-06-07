@@ -13,15 +13,31 @@ import { messageToServer, sendDataToServer } from "./client";
  * Global Variables
  */
 let players = new Array();
+
 class Player {
-    constructor(id, name, num, x, y, rotation, score) {
+    constructor(id, name, num, x, y, rotation, health, score) {
         this.id = id;
         this.name = name;
         this.num = num;
         this.x = x;
         this.y = y;
         this.rotation = rotation;
-        this.score = 100;
+        this.health = 100;
+
+        /**
+         * detailScore = [
+         *  { playerId: "", score: 0 },
+         *  ...
+         * ]
+         *
+         * exclude this own player ID
+         * this player score comulated from others
+         *
+         * in order to send other player's score they get from our health
+         */
+        this.detailScore = [];
+        this.score = 0;
+
         this.obj = initPlayer(this.id, this.num);
         this.atkMode = false;
     }
@@ -102,8 +118,19 @@ function initPlayer(id, num) {
             align: "center",
         });
 
-        var txtScore = new Konva.Text({
+        var txthealth = new Konva.Text({
             y: -10,
+            text: players[id].health,
+            fontSize: 10,
+            fontFamily: "Inter",
+            fill: "white",
+            width: charSize,
+            align: "center",
+            id: "healthText",
+        });
+
+        var txtscore = new Konva.Text({
+            y: 60,
             text: players[id].score,
             fontSize: 10,
             fontFamily: "Inter",
@@ -124,7 +151,8 @@ function initPlayer(id, num) {
 
         char.add(imgChar);
         char.add(txtChar);
-        char.add(txtScore);
+        char.add(txthealth);
+        char.add(txtscore);
         char.add(imgSword);
 
         players[id].obj = char;
@@ -147,6 +175,7 @@ setInterval(() => {
         // console.log("DARI CLIENT", players);
         sendDataToServer(Object.assign({}, players));
     }
+    updateAllScore();
 }, 1000 / 30);
 
 /**
@@ -161,7 +190,7 @@ var anim = new Konva.Animation(function (frame) {
 
     if (atkSword) {
         players[myID].rotation += angleDiff;
-    } 
+    }
 
     if (atkGun) {
     }
@@ -179,6 +208,40 @@ function updatePlayers(id) {
     }
 }
 
+function addOtherPlayerScore(key) {
+    const otherPlayerScoredInThisPlayer = players[myID].detailScore.find(
+        (e) => e.playerId === players[key].id
+    );
+    if (
+        players[myID].detailScore.length === 0 ||
+        typeof otherPlayerScoredInThisPlayer === "undefined"
+    ) {
+        players[myID].detailScore.push({ playerId: players[key].id, score: 1 });
+    } else {
+        players[myID].detailScore.find(
+            (e) => e.playerId === players[key].id
+        ).score += 1;
+    }
+}
+
+function updateAllScore() {
+    for (const key in players) {
+        players[key].score = 0;
+    }
+    for (const key in players) {
+        players[key].detailScore.forEach((e) => {
+            players[e.playerId].score += e.score;
+        });
+    }
+    for (const key in players) {
+        players[key].obj
+            .getChildren(function (node) {
+                return node.getAttr("id") === "scoreText";
+            })[0]
+            .setAttr("text", players[key].score);
+    }
+}
+
 function updateOtherPlayers(clients) {
     for (const key in clients) {
         if (clients[key].id != myID) {
@@ -186,9 +249,12 @@ function updateOtherPlayers(clients) {
             players[key].x = clients[key].x;
             players[key].y = clients[key].y;
             players[key].rotation = clients[key].rotation;
+            players[key].health = clients[key].health;
             players[key].score = clients[key].score;
+            players[key].detailScore = clients[key].detailScore;
 
             if (
+                clients[key].health > 0 &&
                 clients[key].atkMode &&
                 clients[key].atkX < players[myID].x + 50 &&
                 clients[key].atkX > players[myID].x - 50 &&
@@ -196,16 +262,21 @@ function updateOtherPlayers(clients) {
                 clients[key].atkY > players[myID].y - 50
             ) {
                 // console.log('AW AKU TERTUSUK JANJI MANISMU!');
-                players[myID].score -= 1;
+                players[myID].health -= 1;
+                addOtherPlayerScore(key);
             }
         }
-
         players[key].obj
             .getChildren(function (node) {
-                return node.getAttr("id") === "scoreText";
+                return node.getAttr("id") === "healthText";
             })[0]
-            .setAttr("text", players[key].score);
+            .setAttr("text", players[key].health);
     }
+}
+
+function checkConsoleLog() {
+    console.log(players[myID].detailScore);
+    console.log(players);
 }
 
 /**
@@ -242,6 +313,8 @@ $(document.body).on("keydown", function (ev) {
         if (ev.key == "s") keydowns["s"] = true;
         if (ev.key == "a") keydowns["a"] = true;
         if (ev.key == "d") keydowns["d"] = true;
+        if (ev.key == "p") attackOtherPlayers();
+        if (ev.key == "h") checkConsoleLog();
 
         let player = players[myID];
 
@@ -310,7 +383,9 @@ $(document.body).on("keyup", function (ev) {
 /**
  * Event Listener : Click
  */
-stage.on("click", function () {
+stage.on("click", attackOtherPlayers);
+
+function attackOtherPlayers() {
     var pos = stage.getRelativePointerPosition();
     console.log(pos);
 
@@ -327,7 +402,7 @@ stage.on("click", function () {
         delete players[myID].atkX;
         delete players[myID].atkY;
     }, 1000);
-});
+}
 
 /**
  * Add players by received data
@@ -347,6 +422,7 @@ function addPlayer(arr, IDku) {
                 obj.x,
                 obj.y,
                 obj.rotation,
+                obj.health,
                 obj.score
             );
         }

@@ -19,6 +19,15 @@ httpServer.listen(PORT_SERVER, () =>
 const clients = {};
 const rooms = {};
 
+/*
+rooms = {
+    roomId: {
+        clients: []
+    }
+    ...
+}
+*/
+
 const wsServer = new websocketServer({
     httpServer: httpServer,
 });
@@ -42,7 +51,9 @@ wsServer.on("request", (request) => {
                         x: randomX(),
                         y: randomY(),
                         rotation: randomRotation(),
-                        score: 100,
+                        health: 100,
+                        detailScore: [],
+                        score: 0,
                         num: 1,
                     },
                 ],
@@ -73,7 +84,9 @@ wsServer.on("request", (request) => {
                     x: randomX(),
                     y: randomY(),
                     rotation: randomRotation(),
-                    score: 100,
+                    health: 100,
+                    detailScore: [],
+                    score: 0,
                     num: room.clients.length + 1,
                 });
             }
@@ -126,9 +139,32 @@ wsServer.on("request", (request) => {
             };
 
             room.clients.forEach((c) => {
+                if (c.clientId === result.clientId) {
+                    return;
+                }
                 clients[c.clientId].connection.send(JSON.stringify(payLoad));
             });
         }
+
+        // if (result.method === "score") {
+        //     const roomId = result.roomId;
+        //     const room = rooms[roomId];
+        //     const clientId = result.clientId;
+        //     const score = result.score;
+
+        //     const payLoad = {
+        //         method: "score",
+        //         score: score,
+        //     };
+
+        //     room.clients.forEach((c) => {
+        //         if (c.clientId === clientId) {
+        //             c.score = score;
+        //             c.detailScore.push(score);
+        //         }
+        //         clients[c.clientId].connection.send(JSON.stringify(payLoad));
+        //     });
+        // }
     });
 
     // generate a new clientId
