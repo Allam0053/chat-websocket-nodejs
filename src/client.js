@@ -4,6 +4,7 @@ import {
     showSystemChat,
     addPlayerToList,
     showLeaderboard,
+    removeAllPalyerList,
 } from "./chat";
 import { addPlayer, updateOtherPlayers } from "./controller";
 
@@ -134,7 +135,12 @@ ws.onmessage = (message) => {
         let newPlayer = roomClients[roomClients.length - 1];
 
         // Setiap menerima join baru, update UI player list
-        addPlayerToList(newPlayer.clientId);
+        removeAllPalyerList();
+        removeAllPalyerList();
+        roomClients.forEach((client) => {
+            addPlayerToList(client.clientId);
+        });
+        // addPlayerToList(newPlayer.clientId);
 
         // Draw notification of new player has joined
         showSystemChat(newPlayer.clientId + " has joined the room");

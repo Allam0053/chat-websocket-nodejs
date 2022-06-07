@@ -64,6 +64,20 @@ function showLeaderboard(scores) {
     );
 }
 
+function removeAllPalyerList() {
+    $("#playerlist").html(
+        `
+        <button id="checkallbtn" class="btn w-full text-center" >
+                        Global
+        </button>
+        `
+    );
+
+    $("#checkallbtn").click(function () {
+        checkAll();
+    });
+}
+
 function addPlayerToList(playerId) {
     $("#playerlist").prepend(
         `
@@ -102,4 +116,5 @@ export {
     addPlayerToList,
     showSystemChat,
     showLeaderboard,
+    removeAllPalyerList,
 };
