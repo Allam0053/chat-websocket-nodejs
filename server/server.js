@@ -17,8 +17,6 @@ httpServer.listen(PORT_SERVER, () =>
 );
 
 const clients = {};
-const rooms = {};
-const latestResultClients = {};
 
 /*
 rooms = {
@@ -28,6 +26,21 @@ rooms = {
     ...
 }
 */
+const rooms = {};
+
+/**
+latestResultClients = {
+    roomId: {
+        clientId: {class Player from controller.js},
+        {otherClientId}: {...}
+    },
+    {otherRoomId}: {...}
+    sender: latestSenderId
+}
+
+becareful of sender
+ */
+const latestResultClients = {};
 
 const wsServer = new websocketServer({
     httpServer: httpServer,
@@ -212,8 +225,10 @@ function rankingMaker(roomId) {
     ]
      */
     const scoreByPlayer = [];
-    rooms[roomId].clients.forEach((c) => {
-        c.detailScore.forEach((d) => {
+
+    for (const key in latestResultClients[roomId]) {
+        if (key === "sender") continue;
+        latestResultClients[roomId][key].detailScore.forEach((d) => {
             if (
                 scoreByPlayer.length === 0 ||
                 typeof scoreByPlayer.find(
@@ -227,7 +242,7 @@ function rankingMaker(roomId) {
                 ).score += d.score;
             }
         });
-    });
+    }
 
     scoreByPlayer.sort((a, b) => b.score - a.score);
 
