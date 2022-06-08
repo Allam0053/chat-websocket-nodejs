@@ -55,7 +55,7 @@ function playerScore(scores) {
 function showLeaderboard(scores) {
     // $("#leaderboard").html(playerScore(scores));
     const urutan = playerScore(scores);
-    console.log(urutan);
+    // console.log(urutan);
     $("#leaderboard").html(
         `
         <div class='text-white col-span-2 text-center'>LEADERBOARD</div>

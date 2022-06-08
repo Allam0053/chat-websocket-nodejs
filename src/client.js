@@ -121,7 +121,7 @@ ws.onmessage = (message) => {
     // update
     if (response.method === "update") {
         // Update players GUI based oon received pose
-        // console.log("DARI SERVER: ", response.clients);
+        console.log("DARI SERVER: ", response.clients);
         updateOtherPlayers(response.clients);
     }
 

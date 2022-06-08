@@ -174,7 +174,11 @@ stage.add(baseLayer);
 setInterval(() => {
     if (Object.keys(players).length > 0) {
         // console.log("DARI CLIENT", players);
-        sendDataToServer(Object.assign({}, players));
+        const data = {
+            sender: myID,
+            ...Object.assign({}, players),
+        };
+        sendDataToServer(data);
     }
     updateAllScore();
 }, 1000 / 30);
@@ -245,6 +249,9 @@ function updateAllScore() {
 
 function updateOtherPlayers(clients) {
     for (const key in clients) {
+        if (key === "sender") {
+            continue;
+        }
         if (clients[key].id != myID) {
             // console.log("Updating client #" + clients[key].id);
             players[key].x = clients[key].x;

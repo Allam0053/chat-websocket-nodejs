@@ -18,6 +18,7 @@ httpServer.listen(PORT_SERVER, () =>
 
 const clients = {};
 const rooms = {};
+const latestResultClients = {};
 
 /*
 rooms = {
@@ -75,6 +76,9 @@ wsServer.on("request", (request) => {
             setInterval(() => {
                 sendScore(roomId);
             }, 500);
+            setInterval(() => {
+                sendLastUpdateFromServer(roomId);
+            }, 20);
         }
 
         // a client want to join
@@ -149,35 +153,11 @@ wsServer.on("request", (request) => {
         if (result.method === "update") {
             const roomId = result.roomId;
             const room = rooms[roomId];
-            const payLoad = {
-                method: "update",
-                clients: result.clients,
-            };
-
-            // updating the clients in server data
-            for (const key in result.clients) {
-                const dataClientInServer = room.clients.find(
-                    (c) => c.clientId === key
-                );
-                if (typeof dataClientInServer === "undefined") {
-                    console.log("cannot find client key: " + key);
-                    continue;
-                }
-                dataClientInServer.x = result.clients[key].x;
-                dataClientInServer.y = result.clients[key].y;
-                dataClientInServer.rotation = result.clients[key].rotation;
-                dataClientInServer.health = result.clients[key].health;
-                dataClientInServer.score = result.clients[key].score;
-                dataClientInServer.detailScore =
-                    result.clients[key].detailScore;
+            const senderKey = result.clients["sender"];
+            if (typeof latestResultClients[roomId] === "undefined") {
+                latestResultClients[roomId] = result.clients;
             }
-
-            room.clients.forEach((c) => {
-                if (c.clientId === result.clientId) {
-                    return;
-                }
-                clients[c.clientId].connection.send(JSON.stringify(payLoad));
-            });
+            latestResultClients[roomId][senderKey] = result.clients[senderKey];
         }
     });
 
@@ -202,6 +182,19 @@ function sendScore(roomId) {
     const payLoad = {
         method: "score",
         scores: ranking,
+    };
+
+    room.clients.forEach((c) => {
+        clients[c.clientId].connection.send(JSON.stringify(payLoad));
+    });
+}
+
+function sendLastUpdateFromServer(roomId) {
+    const room = rooms[roomId];
+
+    const payLoad = {
+        method: "update",
+        clients: latestResultClients[roomId],
     };
 
     room.clients.forEach((c) => {
