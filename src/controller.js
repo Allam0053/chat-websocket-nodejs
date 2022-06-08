@@ -239,11 +239,12 @@ function updateAllScore() {
         });
     }
     for (const key in players) {
-        players[key].obj
-            .getChildren(function (node) {
-                return node.getAttr("id") === "scoreText";
-            })[0]
-            .setAttr("text", players[key].score);
+        if (typeof players[key].obj !== "undefined")
+            players[key].obj
+                .getChildren(function (node) {
+                    return node.getAttr("id") === "scoreText";
+                })[0]
+                .setAttr("text", players[key].score);
     }
 }
 
@@ -275,11 +276,12 @@ function updateOtherPlayers(clients) {
                 addOtherPlayerScore(key);
             }
         }
-        players[key].obj
-            .getChildren(function (node) {
-                return node.getAttr("id") === "healthText";
-            })[0]
-            .setAttr("text", players[key].health);
+        if (typeof players[key].obj !== "undefined")
+            players[key].obj
+                .getChildren(function (node) {
+                    return node.getAttr("id") === "healthText";
+                })[0]
+                .setAttr("text", players[key].health);
     }
 }
 
@@ -396,7 +398,7 @@ stage.on("click", attackOtherPlayers);
 
 function attackOtherPlayers() {
     var pos = stage.getRelativePointerPosition();
-    console.log(pos);
+    // console.log(pos);
 
     // Muter selama 1 detik
     atkSword = true;

@@ -86,12 +86,16 @@ wsServer.on("request", (request) => {
             const con = clients[clientId].connection;
             con.send(JSON.stringify(payLoad));
 
-            setInterval(() => {
+            let sendScoreInterval = setInterval(() => {
                 sendScore(roomId);
             }, 500);
-            setInterval(() => {
+            let sendLastUpdateInterval = setInterval(() => {
                 sendLastUpdateFromServer(roomId);
             }, 20);
+
+            setTimeout(() => {
+                gameOver(roomId, sendScoreInterval, sendLastUpdateInterval);
+            }, 60000);
         }
 
         // a client want to join
@@ -188,6 +192,23 @@ wsServer.on("request", (request) => {
     //send back the client connect
     connection.send(JSON.stringify(payLoad));
 });
+
+function gameOver(roomId, sendScoreInterval, sendLastUpdateInterval) {
+    clearInterval(sendScoreInterval);
+    clearInterval(sendLastUpdateInterval);
+
+    const room = rooms[roomId];
+    const ranking = rankingMaker(roomId);
+    const payLoad = {
+        method: "gameover",
+        roomId: roomId,
+        ranking: ranking,
+    };
+    room.clients.forEach((c) => {
+        clients[c.clientId].connection.send(JSON.stringify(payLoad));
+    });
+    console.log("gameover in: " + roomId);
+}
 
 function sendScore(roomId) {
     const room = rooms[roomId];

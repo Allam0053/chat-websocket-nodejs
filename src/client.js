@@ -5,6 +5,7 @@ import {
     addPlayerToList,
     showLeaderboard,
     removeAllPalyerList,
+    showGameOverSummary,
 } from "./chat";
 import { addPlayer, updateOtherPlayers } from "./controller";
 
@@ -167,6 +168,13 @@ ws.onmessage = (message) => {
     if (response.method === "score") {
         // console.log(response.scores);
         showLeaderboard(response.scores);
+    }
+
+    // game over, udahan dulu boss
+    if (response.method === "gameover") {
+        console.log("gameover");
+        console.log(response);
+        showGameOverSummary(response.roomId, response.ranking);
     }
 };
 

@@ -64,6 +64,64 @@ function showLeaderboard(scores) {
     );
 }
 
+function showGameOverSummary(roomId, ranking) {
+    $("#gameoversummary").html(`
+    
+    <div class="text-center text-xl font-bold flex justify-center">
+        <span class="text-red-500">Game Over ${roomId}</span>
+    </div>
+    <div class="grid grid-cols-2">
+        ${
+            ranking.hasOwnProperty(0)
+                ? `
+        <div class="text-right font-bold text-[#EEB609] animate-bounce duration-100">${ranking[0].playerId}</div>
+        <div class="text-left font-bold text-[#EEB609] animate-bounce duration-100">${ranking[0].score}</div>
+        `
+                : ``
+        }
+
+        ${
+            ranking.hasOwnProperty(1)
+                ? `
+        <div class="text-right font-bold text-[#D8D8D6]">${ranking[1].playerId}</div>
+        <div class="text-left font-bold text-[#D8D8D6]">${ranking[1].score}</div>
+        `
+                : ``
+        }
+
+        ${
+            ranking.hasOwnProperty(2)
+                ? `
+        <div class="text-right font-bold text-[#A96A40]">${ranking[2].score}</div>
+        <div class="text-left font-bold text-[#A96A40]">${ranking[2].score}</div>
+        `
+                : ``
+        }
+
+        ${
+            ranking.hasOwnProperty(3)
+                ? `
+        <div class="text-right font-bold text-slate-500">${ranking[3].score}</div>
+        <div class="text-left font-bold text-slate-500">${ranking[3].score}</div>
+        `
+                : ``
+        }
+
+        ${
+            ranking.hasOwnProperty(4)
+                ? `
+        <div class="text-right font-bold text-slate-500">${ranking[4].score}</div>
+        <div class="text-left font-bold text-slate-500">${ranking[4].score}</div>
+        `
+                : ``
+        }
+
+    </div>
+    `);
+
+    $("#gameoversummary").addClass("z-[100]");
+}
+
 function removeAllPalyerList() {
     $("#playerlist").html(
         `
@@ -117,4 +175,5 @@ export {
     showSystemChat,
     showLeaderboard,
     removeAllPalyerList,
+    showGameOverSummary,
 };
