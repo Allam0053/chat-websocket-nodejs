@@ -1,12 +1,12 @@
 const app = require("express")();
 
-const PORT_CLIENT = 8080;
+// const PORT_CLIENT = 8080;
 const PORT_SERVER = 8081;
 
 // app.get("/", (req,res)=> res.sendFile(__dirname + "/index.html"));
-app.listen(PORT_CLIENT, () =>
-    console.log("Client listening on port " + PORT_CLIENT)
-);
+// app.listen(PORT_CLIENT, () =>
+//     console.log("Client listening on port " + PORT_CLIENT)
+// );
 
 const express = require("express");
 const http = require("http");
@@ -40,235 +40,217 @@ latestResultClients = {
 
 becareful of sender
  */
+
+const globalRoom = {
+    clients: new Set(),
+    messages: []
+}
+
 const latestResultClients = {};
 
 const wsServer = new websocketServer({
     httpServer: httpServer,
 });
 
+let connectionObjectFromRequestCallback
+
+wsServer.on("connect", (conn) => console.log('new connection', conn == connectionObjectFromRequestCallback));
+wsServer.on("close", (conn) => console.log('someone disconnected'));
 wsServer.on("request", (request) => {
+
+    console.log('new request')
+
     // connect
     const connection = request.accept(null, request.origin);
-    connection.on("open", () => console.log("opened!"));
-    connection.on("close", () => console.log("closed!"));
-    connection.on("message", (message) => {
-        const result = JSON.parse(message.utf8Data);
-        // a client want to create a new room
-        if (result.method === "create") {
-            const clientId = result.clientId;
-            const roomId = guidRoom();
-            rooms[roomId] = {
-                id: roomId,
-                clients: [
-                    {
-                        clientId: clientId,
-                        x: randomX(),
-                        y: randomY(),
-                        rotation: randomRotation(),
-                        health: 100,
-                        detailScore: [],
-                        score: 0,
-                        num: 1,
-                    },
-                ],
-                score: [],
-                messages: [],
-            };
-            const room = rooms[roomId];
+    connectionObjectFromRequestCallback = connection;
 
-            const payLoad = {
-                method: "join",
-                room: room,
-            };
-            console.log(clientId + " has created #" + roomId);
-            // console.log(payLoad);
-
-            const con = clients[clientId].connection;
-            con.send(JSON.stringify(payLoad));
-
-            let sendScoreInterval = setInterval(() => {
-                sendScore(roomId);
-            }, 500);
-            let sendLastUpdateInterval = setInterval(() => {
-                sendLastUpdateFromServer(roomId);
-            }, 20);
-
-            setTimeout(() => {
-                gameOver(roomId, sendScoreInterval, sendLastUpdateInterval);
-            }, 60000);
-        }
-
-        // a client want to join
-        if (result.method === "join") {
-            const clientId = result.clientId;
-            const roomId = result.roomId;
-            const room = rooms[roomId];
-
-            if (!isRoomExist(roomId)) {
-                const payLoad = {
-                    method: "error",
-                    messages: {
-                        sender: "client",
-                        message: "Room does not exist",
-                    },
-                };
-                clients[clientId].connection.send(JSON.stringify(payLoad));
-                return;
-            }
-            if (!isPlayerJoined(roomId, clientId)) {
-                room.clients.push({
-                    clientId: clientId,
-                    x: randomX(),
-                    y: randomY(),
-                    rotation: randomRotation(),
-                    health: 100,
-                    detailScore: [],
-                    score: 0,
-                    num: room.clients.length + 1,
-                });
-            }
-
-            const payLoad = {
-                method: "join",
-                room: room,
-            };
-            console.log(clientId + " has joined #" + roomId);
-            // console.log(payLoad);
-
-            // loop through all clients and tell them that people has joined
-            room.clients.forEach((c) => {
-                clients[c.clientId].connection.send(JSON.stringify(payLoad));
-            });
-        }
-
-        // chat
-        if (result.method === "message") {
-            const clientId = result.clientId;
-            const roomId = result.roomId;
-            const room = rooms[roomId];
-            const target = result.target;
-
-            // Sent back the messages to all client in the same room
-            const payLoad = {
-                method: "message",
-                messages: {
-                    sender: clientId,
-                    message: result.message,
-                },
-            };
-
-            room.clients.forEach((c) => {
-                // Send only to the target
-                if (target.includes(c.clientId)) {
-                    clients[c.clientId].connection.send(
-                        JSON.stringify(payLoad)
-                    );
-                }
-            });
-        }
-
-        if (result.method === "update") {
-            const roomId = result.roomId;
-            const room = rooms[roomId];
-            const senderKey = result.clients["sender"];
-            if (typeof latestResultClients[roomId] === "undefined") {
-                latestResultClients[roomId] = result.clients;
-            }
-            latestResultClients[roomId][senderKey] = result.clients[senderKey];
-        }
-    });
-
-    // generate a new clientId
-    const clientId = guidUser();
-    clients[clientId] = {
+    // generate a new clientId (always run in first connection)
+    const generatedId = guidUser();
+    clients[generatedId] = {
         connection: connection,
     };
 
     const payLoad = {
-        method: "connect",
-        clientId: clientId,
+        clientId: generatedId,
+        method: "connect-to-server",
+        message: `welcome to server, ${generatedId}. you are in global room.`
     };
+    globalRoom.clients.add(generatedId);
 
     //send back the client connect
     connection.send(JSON.stringify(payLoad));
-});
 
-function gameOver(roomId, sendScoreInterval, sendLastUpdateInterval) {
-    clearInterval(sendScoreInterval);
-    clearInterval(sendLastUpdateInterval);
-
-    const room = rooms[roomId];
-    const ranking = rankingMaker(roomId);
-    const payLoad = {
-        method: "gameover",
-        roomId: roomId,
-        ranking: ranking,
-    };
-    room.clients.forEach((c) => {
-        clients[c.clientId].connection.send(JSON.stringify(payLoad));
-    });
-    console.log("gameover in: " + roomId);
-}
-
-function sendScore(roomId) {
-    const room = rooms[roomId];
-    const ranking = rankingMaker(roomId);
-    const payLoad = {
-        method: "score",
-        scores: ranking,
-    };
-
-    room.clients.forEach((c) => {
-        clients[c.clientId].connection.send(JSON.stringify(payLoad));
-    });
-}
-
-function sendLastUpdateFromServer(roomId) {
-    const room = rooms[roomId];
-
-    const payLoad = {
-        method: "update",
-        clients: latestResultClients[roomId],
-    };
-
-    room.clients.forEach((c) => {
-        clients[c.clientId].connection.send(JSON.stringify(payLoad));
-    });
-}
-
-function rankingMaker(roomId) {
-    /**
-    [
-        {
-            playerId: string,
-            score: number
-        }
-    ]
-     */
-    const scoreByPlayer = [];
-
-    for (const key in latestResultClients[roomId]) {
-        if (key === "sender") continue;
-        latestResultClients[roomId][key].detailScore.forEach((d) => {
-            if (
-                scoreByPlayer.length === 0 ||
-                typeof scoreByPlayer.find(
-                    (playerScore) => playerScore.playerId === d.playerId
-                ) === "undefined"
-            ) {
-                scoreByPlayer.push({ playerId: d.playerId, score: d.score });
-            } else {
-                scoreByPlayer.find(
-                    (playerScore) => playerScore.playerId === d.playerId
-                ).score += d.score;
+    function currentConnectionHandlerFactory() {
+        const clientId = generatedId;
+        let roomId = '';
+        return (message) => {
+            const result = JSON.parse(message.utf8Data);
+    
+            //#region ============= chat handler ==========
+            console.log(`${result.method}:${clientId}`)
+    
+            if (result.method === 'chat-connect') {
+                const payLoad = {
+                    method: "connect-to-server",
+                    message: `welcome to server, ${clientId}. you are in global room.`
+                };
+                const con = clients[clientId].connection;
+                con.send(JSON.stringify(payLoad));
+                return;
             }
-        });
+    
+            if (result.method === 'chat-create') {
+                roomId = guidRoom();
+                rooms[roomId] = {
+                    id: roomId,
+                    clients: [
+                        {
+                            clientId: clientId,
+                        },
+                    ],
+                    messages: [],
+                };
+                const room = rooms[roomId];
+    
+                const payLoad = {
+                    method: "join",
+                    room: room,
+                    message: `welcome to room ${roomId}, ${clientId}`
+                };
+                console.log(clientId + " has created #" + roomId);
+                globalRoom.clients.delete(clientId);
+                // console.log(payLoad);
+    
+                const con = clients[clientId].connection;
+                con.send(JSON.stringify(payLoad));
+                return;
+            }
+    
+            if (result.method === 'chat-join') {
+                roomId = result.roomId;
+                const room = rooms[roomId];
+    
+                if (!isRoomExist(roomId)) {
+                    const payLoad = {
+                        method: "error",
+                        messages: {
+                            sender: "client",
+                            message: "Room does not exist",
+                        },
+                    };
+                    clients[clientId].connection.send(JSON.stringify(payLoad));
+                    return;
+                }
+                if (!isPlayerJoined(roomId, clientId)) {
+                    room.clients.push({
+                        clientId: clientId,
+                    });
+                }
+    
+                const payLoad = {
+                    method: "join",
+                    room: room,
+                };
+                console.log(clientId + " has joined #" + roomId);
+                // console.log(payLoad);
+
+                globalRoom.clients.delete(clientId);
+    
+                // loop through all clients and tell them that people has joined
+                room.clients.forEach((c) => {
+                    clients[c.clientId].connection.send(JSON.stringify(payLoad));
+                });
+                return;
+            }
+    
+            if (result.method === 'chat-log') {
+                let clientRoom = {};
+                let clientRoomId = '';
+                Object
+                    .entries(rooms)
+                    .forEach(
+                        ([roomIdIter, roomIter]) => Object
+                            .entries(roomIter)
+                            .forEach(([clientIdIter, clientIter]) => {
+                                if (clientIdIter === clientId) {
+                                    clientRoom = roomIter;
+                                    clientRoomId = roomIdIter;
+                                }
+                            })
+                    )
+                const payload = {
+                    method: "log",
+                    messages: `${clientId} is in ${clientRoomId}`,
+                    client: {
+                        clientId,
+                    },
+                    room: clientRoom,
+                }
+                clients[clientId].connection.send(JSON.stringify(payload))
+                return;
+            }
+    
+            if (result.method === "message") {
+                const room = rooms[roomId];
+                const target = result.target;
+
+                if (!roomId && !target) {
+                    globalRoom.messages.push({
+                        sender: clientId,
+                        message: result.message
+                    });
+                    // Sent back the messages to all client in the same room
+                    const payLoad = {
+                        method: "message",
+                        messages: {
+                            sender: clientId,
+                            receiver: 'global',
+                            message: result.message,
+                        },
+                    };
+                    globalRoom.clients.forEach((globalRoomClientId) => {
+                        console.log('broadcasting to', globalRoomClientId)
+                        clients[globalRoomClientId].connection.send(
+                            JSON.stringify(payLoad)
+                        );
+                    })
+                    return;
+                }
+    
+                // Sent back the messages to all client in the same room
+                const payLoad = {
+                    method: "message",
+                    messages: {
+                        sender: clientId,
+                        message: result.message,
+                    },
+                };
+    
+                room.clients.forEach((c) => {
+                    // Send only to the target
+                    if (target.includes(c.clientId)) {
+                        clients[c.clientId].connection.send(
+                            JSON.stringify(payLoad)
+                        );
+                    }
+                });
+                return;
+            }
+
+            if (result.method === 'get-global-message') {
+                clients[clientId].connection.send(
+                    JSON.stringify({messages: globalRoom.messages})
+                )
+                return;
+            }
+            //#endregion ========== chat handler ==========
+        }
     }
 
-    scoreByPlayer.sort((a, b) => b.score - a.score);
-
-    return Object.assign({}, scoreByPlayer);
-}
+    connection.on("open", () => console.log("opened!"));
+    connection.on("close", () => console.log("closed!"));
+    connection.on("message", currentConnectionHandlerFactory());
+});
 
 function isRoomExist(roomId) {
     return typeof rooms[roomId] !== "undefined";
@@ -333,3 +315,27 @@ function randomX() {
 function randomRotation() {
     return Math.random() * 360;
 }
+
+//#region ============= messaging json ==========
+/**
+ * 
+1. user1 connect server, retrieve clientId
+{
+    "method": "chat-connect"
+}
+
+2. user1 create room
+{
+    "clientId": "user1",
+    "method": "chat-create"
+}
+
+3. user2 join room
+{
+    "clientId": "user1",
+    "method": "chat-join"
+}
+
+4. user2 
+ */
+//#endregion ========== messaging json ==========
